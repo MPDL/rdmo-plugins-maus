@@ -39,8 +39,8 @@ class SMPExportMixin:
     @property
     def smp_exports(self):
         # Add smp specific export choices if project has SMP Catalog
+        smp_exports = {}
         if self.project.catalog.uri_path == 'smp':
-            smp_exports = {}
             for k, v in self.smp_exports_map.items():
                 if k == 'license':
                     license_ids = get_project_license_ids(self.project, self.snapshot)
@@ -62,9 +62,7 @@ class SMPExportMixin:
 
                 smp_exports[k] = {'label': v['form_choice_label'], 'file_path': v['form_choice_file_path']}
 
-            return smp_exports
-        else:
-            return {}
+        return smp_exports
 
     def render_smp_export(self, choice):
         if choice.startswith('license'):
