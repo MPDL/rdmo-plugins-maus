@@ -38,7 +38,7 @@ This repo also implements an SMPExportMixin, which can be used by other [export 
         ]
         ```
 
-4. For the README and CITATION export plugins, import the views needed in your RDMO instance. The views are "view-smp-citation.xml" and "view-smp-readme.xml" and can be found in our [forked rdmo-catalog repo](https://github.com/MPDL/rdmo-catalog/tree/MPG-catalogues/rdmorganiser/views)
+4. For the README, CITATION and SMP Report export plugins, import the views needed in your RDMO instance. The views are "view-smp-citation.xml", "view-smp-readme.xml" and "view-smp-report.xml" and can be found in our [forked rdmo-catalog repo](https://github.com/MPDL/rdmo-catalog/tree/MPG-catalogues/rdmorganiser/views)
 
 5. [Optional] These plugins are SMP-specific, and do not work properly for other catalogues. If a user clicks on one of them, they will be informed that the plugin only works for SMP projects. However, with the following adaptations, these plugins will only be shown to the user if the project has an SMP catalogue:
 
