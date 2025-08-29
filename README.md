@@ -5,6 +5,7 @@ This repo implements three plugins for Software Management Plan (SMP) projects i
 * a README export plugin, which creates a README.md file with the data in an SMP project
 * a CITATION export plugin, which creates a CITATION.cff file with the data in an SMP project
 * a LICENSE export plugin, which creates a LICENSE file or a licenses.zip file with the license(s) chosen for an SMP project
+* an SMP Report export plugin, which creates an html file with all answers of an SMP project, displayed as a report
 
 This repo also implements an SMPExportMixin, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin offers SMP-specific export options and their content. An example implementation is the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/tree/dev).
 
@@ -30,9 +31,10 @@ This repo also implements an SMPExportMixin, which can be used by other [export 
 
         ```python
         PROJECT_EXPORTS += [
-            ('readme', _('README'), 'rdmo_maus.smp_exports.SMPReadmeExport'),
-            ('citation', _('CITATION'), 'rdmo_maus.smp_exports.SMPCitationExport'),
-            ('license', _('LICENSE'), 'rdmo_maus.smp_exports.SMPLicenseExport'),
+            ('smp-readme', _('README'), 'rdmo_maus.smp_exports.SMPReadmeExport'),
+            ('smp-citation', _('CITATION'), 'rdmo_maus.smp_exports.SMPCitationExport'),
+            ('smp-license', _('LICENSE'), 'rdmo_maus.smp_exports.SMPLicenseExport'),
+            ('smp-report', _('SMP Report'), 'rdmo_maus.smp_exports.SMPReportExport')
         ]
         ```
 
@@ -72,7 +74,7 @@ This repo also implements an SMPExportMixin, which can be used by other [export 
     5.3 [Optional] Add the export plugin keys to SMP_PROJECT_EXPORTS in `config/settings/local.py`:
 
         ```python
-        SMP_PROJECT_EXPORTS += ['readme', 'citation', 'license']
+        SMP_PROJECT_EXPORTS += ['smp-readme', 'smp-citation', 'smp-license', 'smp-report']
         ```
 
 ## Usage
