@@ -1,6 +1,6 @@
 # rdmo-plugins-maus
 
-This repo implements three plugins for Software Management Plan (SMP) projects in [RDMO](https://github.com/rdmorganiser/rdmo):
+This repo implements four plugins for Software Management Plan (SMP) projects in [RDMO](https://github.com/rdmorganiser/rdmo):
 
 * a README export plugin, which creates a README.md file with the data in an SMP project
 * a CITATION export plugin, which creates a CITATION.cff file with the data in an SMP project
