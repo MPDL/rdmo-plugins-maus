@@ -108,5 +108,6 @@ def render_from_view(project, snapshot, view_uri, title, export_format):
         'resource_path': get_value_path(project, snapshot)
         }
     )
+    response['Content-Disposition'] = f'attachment; filename="{title}"'
 
     return response
