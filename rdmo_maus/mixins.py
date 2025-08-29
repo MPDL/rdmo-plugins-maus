@@ -30,12 +30,13 @@ class SMPExportMixin:
         },
         'report': {
             'form_choice_label': 'SMP Report',
-            'form_choice_file_path': 'smp_report.html',
+            'form_choice_file_path': 'data/smp_report.html',
             'render_function': render_from_view,
             'render_function_kwargs': {
                 'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-report',
                 'title': 'smp_report.html',
-                'export_format': 'html'
+                'export_format': 'html',
+                'language_code': 'en'
             }
         }
     }

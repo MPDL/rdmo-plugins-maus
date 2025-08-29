@@ -5,6 +5,7 @@ from io import BytesIO
 
 from django.template import TemplateSyntaxError
 from django.http import HttpResponse
+from django.utils.translation import get_language, override
 
 from rdmo.core.utils import render_to_format
 from rdmo.domain.models import Attribute
@@ -91,23 +92,25 @@ def render_to_license(project, snapshot=None, choice=None):
         )
         return response
 
-def render_from_view(project, snapshot, view_uri, title, export_format):
-    view = View.objects.get(uri=view_uri)
+def render_from_view(project, snapshot, view_uri, title, export_format, language_code=None):
+    language = language_code if language_code is not None else get_language()
+    with override(language):
+        view = View.objects.get(uri=view_uri)
 
-    try:
-        rendered_view = view.render(project, snapshot)
-    except TemplateSyntaxError:
-        return None
+        try:
+            rendered_view = view.render(project, snapshot)
+        except TemplateSyntaxError:
+            return None
 
-    response = render_to_format(
-        None, export_format, title, 'projects/project_view_export.html', {
-        'format': export_format,
-        'title': title,
-        'view': view,
-        'rendered_view': rendered_view,
-        'resource_path': get_value_path(project, snapshot)
-        }
-    )
-    response['Content-Disposition'] = f'attachment; filename="{title}"'
+        response = render_to_format(
+            None, export_format, title, 'projects/project_view_export.html', {
+            'format': export_format,
+            'title': title,
+            'view': view,
+            'rendered_view': rendered_view,
+            'resource_path': get_value_path(project, snapshot)
+            }
+        )
+        response['Content-Disposition'] = f'attachment; filename="{title}"'
 
-    return response
+        return response

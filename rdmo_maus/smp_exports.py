@@ -1,7 +1,6 @@
 
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import override 
 
 from rdmo.projects.exports import Export
 from rdmo import __version__
@@ -28,10 +27,7 @@ class SMPBaseLocalExport(SMPExportMixin, Export):
     
 class SMPReportExport(SMPBaseLocalExport):
     def render(self):
-        # SMP Report is only available in English, 
-        # so translate all selected options if translation available
-        with override('en'):
-            return self._render('report')
+        return self._render('report')
 
 class SMPReadmeExport(SMPBaseLocalExport):
     def render(self):
