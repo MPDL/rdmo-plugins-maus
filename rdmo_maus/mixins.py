@@ -9,7 +9,8 @@ class SMPExportMixin:
             'render_function_kwargs': {
                 'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-readme',
                 'title': 'README.md',
-                'export_format': 'markdown'
+                'export_format': 'markdown',
+                'language_code': 'en'
             }
         },
         'citation': {
