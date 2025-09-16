@@ -7,7 +7,7 @@ This repo implements four plugins for Software Management Plan (SMP) projects in
 * a LICENSE export plugin, which creates a LICENSE file or a licenses.zip file with the license(s) chosen for an SMP project
 * an SMP Report export plugin, which creates an html file with all answers of an SMP project, displayed as a report
 
-This repo also implements an SMPExportMixin, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin offers SMP-specific export options and their content. An example implementation is the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/tree/dev).
+This repo also implements an SMPExportMixin class, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin class offers SMP-specific export options and their content. An example implementation is the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/tree/dev).
 
 
 ## Setup
@@ -38,7 +38,7 @@ This repo also implements an SMPExportMixin, which can be used by other [export 
         ]
         ```
 
-4. For the README, CITATION and SMP Report export plugins, import the views needed in your RDMO instance. The views are "view-smp-citation.xml", "view-smp-readme.xml" and "view-smp-report.xml" and can be found in our [forked rdmo-catalog repo](https://github.com/MPDL/rdmo-catalog/tree/MPG-catalogues/rdmorganiser/views)
+4. For the README, CITATION and SMP Report export plugins, import the views needed in your RDMO instance. The views are "view-smp-citation.xml", "view-smp-readme.xml" and "view-smp-report.xml" and can be found in our [forked rdmo-catalog](https://github.com/MPDL/rdmo-catalog/tree/MPG-catalogues/rdmorganiser/views).
 
 5. [Optional] These plugins are SMP-specific, and do not work properly for other catalogues. If a user clicks on one of them, they will be informed that the plugin only works for SMP projects. However, with the following adaptations, these plugins will only be shown to the user if the project has an SMP catalogue:
 
@@ -81,8 +81,8 @@ This repo also implements an SMPExportMixin, which can be used by other [export 
 
 ### Export plugins
 
-For SMP projects, users can export - locally or to a web service - custom files (README, CITATION, LICENSE) created with the SMP project's data.
+For SMP projects, users can export custom files (README, CITATION, LICENSE, and SMP report) created with the SMP project's data.
 
 ### SMPExportMixin
 
-This repo also implements an SMPExportMixin, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin offers SMP-specific export options (README, CITATION, LICENSE) and their content. An example implementation is the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/tree/dev).
+This repo also implements an SMPExportMixin class, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin class offers SMP-specific export options (README, CITATION, LICENSE, and SMP report) and their content. An example implementation is the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/tree/dev).
