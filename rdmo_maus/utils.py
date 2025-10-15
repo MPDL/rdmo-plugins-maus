@@ -5,7 +5,9 @@ from io import BytesIO
 
 from django.template import TemplateSyntaxError
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.utils.translation import get_language, override
+from django.utils.translation import gettext_lazy as _
 
 from rdmo.core.utils import render_to_format
 from rdmo.domain.models import Attribute
@@ -61,8 +63,15 @@ def get_project_license_ids(project, snapshot=None):
     spdx_ids = [id.removeprefix('Other Software License: ').removeprefix('Andere Software-Lizenz: ') for id in spdx_ids]
     return spdx_ids
 
-def render_to_license(project, snapshot=None, choice=None):
+def render_to_license(request, project, snapshot=None, choice=None):
         spdx_ids = get_project_license_ids(project, snapshot)
+        
+        if len(spdx_ids) == 0: # no license(s) selected yet
+            return render(request, 'core/error.html', {
+                'title': _('Something went wrong'),
+                'errors': [_('No license(s) selected yet for this project.')]
+            }, status=200)
+        
         if choice is not None:
             spdx_id = next((l for l in spdx_ids if l.lower().replace('-', '_') == choice), choice)
             spdx_ids = [spdx_id]
@@ -92,7 +101,7 @@ def render_to_license(project, snapshot=None, choice=None):
         )
         return response
 
-def render_from_view(project, snapshot, view_uri, title, export_format, language_code=None):
+def render_from_view(request, project, snapshot, view_uri, title, export_format, language_code=None):
     language = language_code if language_code is not None else get_language()
     with override(language):
         view = View.objects.get(uri=view_uri)

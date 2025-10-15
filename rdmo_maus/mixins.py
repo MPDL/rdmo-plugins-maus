@@ -100,5 +100,5 @@ class SMPExportMixin:
         else:
             form_choice_label, form_choice_file_path, render_function, kwargs = self.smp_exports_map[choice].values()
         
-        response = render_function(self.project, self.snapshot, **kwargs)
+        response = render_function(self.request, self.project, self.snapshot, **kwargs)
         return response
