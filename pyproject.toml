@@ -32,8 +32,11 @@ dynamic = ["version"]
 [project.urls]
 repository = "https://github.com/MPDL/rdmo-plugins-maus"
 
-[tool.setuptools]
-packages = ["rdmo_maus"]
+[tool.setuptools.packages.find]
+include = ["rdmo_maus*"]
+
+[tool.setuptools.package-data]
+"*" = ["*"]
 
 [tool.setuptools.dynamic]
 version = {attr = "rdmo_maus.__version__"}
