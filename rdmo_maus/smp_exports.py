@@ -12,7 +12,7 @@ class SMPBaseLocalExport(SMPExportMixin, Export):
         if self.project.catalog.uri_path != 'smp':
             return render(self.request, 'core/error.html', {
                 'title': _('SMP-specific Plugin'),
-                'errors': [_('This plugin only works for projects with the Software Management Plan catalogue')]
+                'errors': [_('This plugin only works for projects with the Software Management Plan catalogue.')]
             }, status=200)
         
         response = self.render_smp_export(choice)
@@ -20,7 +20,7 @@ class SMPBaseLocalExport(SMPExportMixin, Export):
         if response is None:
             return render(self.request, 'core/error.html', {
                 'title': _('Something went wrong'),
-                'errors': [_('Export choice could not be created')]
+                'errors': [_('Export choice could not be created.')]
             }, status=200)
 
         return response
