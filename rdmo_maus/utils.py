@@ -1,7 +1,8 @@
-import requests
 import base64
 import zipfile
 from io import BytesIO
+
+import requests
 
 from django.template import TemplateSyntaxError
 from django.http import HttpResponse
