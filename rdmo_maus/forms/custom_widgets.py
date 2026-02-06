@@ -345,8 +345,9 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
             checkbox_id = '%s_%s' % (option_attrs['id'], index)
             extra_option_attrs['checkbox'].update({'id': checkbox_id})
         
-            text_id = '%s_%s' % (f'{option_attrs["id"]}_text', index)
-            extra_option_attrs['text'].update({'id': text_id})
+            if key != 'select_all_choice':
+                text_id = '%s_%s' % (f'{option_attrs["id"]}_text', index)
+                extra_option_attrs['text'].update({'id': text_id})
 
             option_attrs = {}
 

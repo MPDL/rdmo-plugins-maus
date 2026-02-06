@@ -291,6 +291,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
         key (str, choice key)
 
         """
+
         value_lst = value.split(',')
         value_key = value_lst[0]
         for (values, labels, key) in self.choices:
@@ -329,7 +330,6 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
             raise ValidationError(_('At least one choice must be selected.'), code='required')
 
         # validate choice values, which consist of multivalues (boolean and string)
-        cleaned_value = []
         for multivalue in value:
             multivalue_list = multivalue.split(',')
             choice_key = multivalue_list[0]
@@ -344,17 +344,16 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
                     self.widget.errors[choice_key] = errors
                 else:
                     self.widget.errors.pop(choice_key, None)
-                    cleaned_value.append(out)
         
         # raise ValidationError with empty string after passing errors to corresponding choices
         if len(self.widget.errors) > 0:
             raise ValidationError('')
         
-        self.validate(cleaned_value)
-        self.run_validators(cleaned_value)
-        
         # select_all_choice is not really a choice, so do not include it in the 'cleaned' value
         if self.include_select_all_choice:
-            cleaned_value = cleaned_value[1:]
+            value = value[1:]
+        
+        self.validate(value)
+        self.run_validators(value)
 
-        return cleaned_value
+        return value
