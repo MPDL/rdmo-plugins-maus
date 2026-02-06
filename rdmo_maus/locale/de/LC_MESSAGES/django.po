@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-15 12:27+0000\n"
+"POT-Creation-Date: 2026-02-06 08:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: smp_exports.py:14
+#: exports/smp_exports.py:14
 msgid "SMP-specific Plugin"
 msgstr "SMP-spezifisches Plugin"
 
-#: smp_exports.py:15
+#: exports/smp_exports.py:15
 msgid ""
 "This plugin only works for projects with the Software Management Plan "
 "catalogue."
@@ -30,14 +30,27 @@ msgstr ""
 "Dieses Plugin funktioniert nur für Projekte mit dem Software-Management-Plan-"
 "Katalog."
 
-#: smp_exports.py:22 utils.py:72
+#: exports/smp_exports.py:22 utils.py:72
 msgid "Something went wrong"
 msgstr "Etwas ist schief gelaufen"
 
-#: smp_exports.py:23
+#: exports/smp_exports.py:23
 msgid "Export choice could not be created."
 msgstr "Exportoption konnte nicht erstellt werden."
 
+#: forms/custom_fields.py:53
+#, python-brace-format
+msgid "A {field_label} is required."
+msgstr "Ein(e) {field_label} ist erforderlich."
+
+#: forms/custom_fields.py:195 forms/custom_widgets.py:171
+msgid "Select all"
+msgstr "Alle auswählen"
+
+#: forms/custom_fields.py:329
+msgid "At least one choice must be selected."
+msgstr "Mindestens eine Option muss ausgewählt werden."
+
 #: utils.py:73
 msgid "No license(s) selected yet for this project."
-msgstr "Für dieses Projekt wurde noch keine Lizenz(en) ausgewählt."
+msgstr "Für dieses Projekt wurde(n) noch keine Lizenz(en) ausgewählt."
