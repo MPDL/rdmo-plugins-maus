@@ -350,7 +350,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
             raise ValidationError('')
         
         # select_all_choice is not really a choice, so do not include it in the 'cleaned' value
-        if self.include_select_all_choice and value[0][2] == self.select_all_choice[2]:
+        if self.include_select_all_choice and value[0] == self.select_all_choice[2]:
             value = value[1:]
         
         self.validate(value)
