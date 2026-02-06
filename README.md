@@ -9,6 +9,8 @@ This repo implements four plugins for Software Management Plan (SMP) projects in
 
 This repo also implements an SMPExportMixin class, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin class offers SMP-specific export options and their content. An example implementation is the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/tree/dev).
 
+Furthermore, you will find a custom field "MultivalueCheckboxMultipleChoiceField" that displays choices similar to django's MultipleChoiceField with a CheckboxSelectMultiple widget. The difference to the built-in field is, that you can optionally have an extra text field for each choice, in case you need further text input. With this custom field you can also sort selected choices. For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plugins-maus/tree/main/rdmo_maus/forms/custom_fields.py) and for an example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) and [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
+
 
 ## Setup
 
@@ -31,10 +33,10 @@ This repo also implements an SMPExportMixin class, which can be used by other [e
 
         ```python
         PROJECT_EXPORTS += [
-            ('smp-readme', _('README'), 'rdmo_maus.smp_exports.SMPReadmeExport'),
-            ('smp-citation', _('CITATION'), 'rdmo_maus.smp_exports.SMPCitationExport'),
-            ('smp-license', _('LICENSE'), 'rdmo_maus.smp_exports.SMPLicenseExport'),
-            ('smp-report', _('SMP Report'), 'rdmo_maus.smp_exports.SMPReportExport')
+            ('smp-readme', _('README'), 'rdmo_maus.exports.smp_exports.SMPReadmeExport'),
+            ('smp-citation', _('CITATION'), 'rdmo_maus.exports.smp_exports.SMPCitationExport'),
+            ('smp-license', _('LICENSE'), 'rdmo_maus.exports.smp_exports.SMPLicenseExport'),
+            ('smp-report', _('SMP Report'), 'rdmo_maus.exports.smp_exports.SMPReportExport')
         ]
         ```
 
@@ -86,3 +88,17 @@ For SMP projects, users can export custom files (README, CITATION, LICENSE, and 
 ### SMPExportMixin
 
 This repo also implements an SMPExportMixin class, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin class offers SMP-specific export options (README, CITATION, LICENSE, and SMP report) and their content. An example implementation is the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/tree/dev).
+
+### Custom field "MultivalueCheckboxMultipleChoiceField"
+
+1. Import the field in your form with `from rdmo_maus.forms.custom_fields import MultivalueCheckboxMultipleChoiceField`
+
+2. Define one of your fields with this custom field:
+
+```
+my_multiple_choices = MultivalueCheckboxMultipleChoiceField(
+        label='My Sortable Multiple Choices',
+        sortable=True
+        choices=[('True,value-text-field', ('checkbox-label', 'text-label'), 'choice-1'), ('False', 'single-checkbox-label', 'choice-2')]
+    )
+```
