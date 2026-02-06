@@ -48,10 +48,9 @@ def get_licenses(spdx_ids):
         response = requests.get(url, headers={'Accept': 'application/vnd.github+json'})
         try:
             response.raise_for_status()
-            base64_string_of_content = response.json().get('content')
-            base64_bytes_of_content = base64_string_of_content.encode('utf-8')
-            content_bytes = base64.b64decode(base64_bytes_of_content)
-            content = content_bytes.decode('utf-8')
+            encoded_content = response.json().get('content')
+            decoded_bytes = base64.b64decode(encoded_content)
+            content = decoded_bytes.decode('utf-8')
             license_contents[f'LICENSE_{id.replace("-", "_")}'] = content
         except:
             continue

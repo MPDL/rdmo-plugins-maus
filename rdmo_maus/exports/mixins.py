@@ -1,4 +1,4 @@
-from .utils import get_project_license_ids, render_from_view, render_to_license
+from ..utils import get_project_license_ids, render_from_view, render_to_license
 
 class SMPExportMixin:
     smp_exports_map = {
@@ -20,7 +20,8 @@ class SMPExportMixin:
             'render_function_kwargs': {
                 'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-citation',
                 'title': 'CITATION.cff',
-                'export_format': 'plain'
+                'export_format': 'plain',
+                'language_code': 'en'
             }
         },
         'licenses': {
