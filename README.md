@@ -99,6 +99,9 @@ This repo also implements an SMPExportMixin class, which can be used by other [e
 my_multiple_choices = MultivalueCheckboxMultipleChoiceField(
         label='My Sortable Multiple Choices',
         sortable=True
-        choices=[('True,value-text-field', ('checkbox-label', 'text-label'), 'choice-1'), ('False', 'single-checkbox-label', 'choice-2')]
+        choices=[
+            ('True,value-text-field', ('checkbox-label', 'text-label'), 'choice-1'), 
+            ('False', 'single-checkbox-label', 'choice-2')
+        ]
     )
 ```
