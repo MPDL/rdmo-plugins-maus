@@ -7,7 +7,7 @@ This repo implements four plugins for Software Management Plan (SMP) projects in
 * a LICENSE export plugin, which creates a LICENSE file or a licenses.zip file with the license(s) chosen for an SMP project
 * an SMP Report export plugin, which creates an html file with all answers of an SMP project, displayed as a report
 
-This repo also implements an SMPExportMixin class, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin class offers SMP-specific export options and their content. An example implementation is the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/tree/dev).
+This repo also implements an SMPExportMixin class, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin class offers SMP-specific export options and their content. An example implementation is the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/tree/dev).
 
 Furthermore, you will find a custom field "MultivalueCheckboxMultipleChoiceField" that displays choices similar to django's MultipleChoiceField with a CheckboxSelectMultiple widget. The difference to the built-in field is, that you can optionally have an extra text field for each choice, in case you need further text input. With this custom field you can also sort selected choices. For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plugins-maus/tree/main/rdmo_maus/forms/custom_fields.py) and for example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) and [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
 
@@ -87,7 +87,7 @@ For SMP projects, users can export custom files (README, CITATION, LICENSE, and 
 
 ### SMPExportMixin
 
-This repo also implements an SMPExportMixin class, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin class offers SMP-specific export options (README, CITATION, LICENSE, and SMP report) and their content. An example implementation is the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/tree/dev).
+This repo also implements an SMPExportMixin class, which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins). This SMPExportMixin class offers SMP-specific export options (README, CITATION, LICENSE, and SMP report) and their content. An example implementation is the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/tree/dev).
 
 ### Custom field "MultivalueCheckboxMultipleChoiceField"
 
