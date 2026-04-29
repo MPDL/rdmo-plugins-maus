@@ -2,79 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from .custom_widgets import MultivalueCheckboxWidget, MultivalueCheckboxMultipleChoiceWidget
-
-class MultivalueCheckboxField(forms.MultiValueField):
-    widget = MultivalueCheckboxWidget
-
-    def __init__(self, choice=(), simple_checkbox=False):
-        self.choice = choice
-        self.simple_checkbox = simple_checkbox
-
-        fields = (
-            (forms.BooleanField(),) if simple_checkbox else
-            (    
-                forms.BooleanField(),
-                forms.CharField(),
-            )
-        )
-
-        super().__init__(fields)
-
-    def clean(self, value):
-        """This method applies to a multi-value field corresponding to 
-        a choice in MultivalueCheckboxMultipleChoiceField.
-        Every export choice consists of a boolean field and a char field.
-
-        Validate every subvalue in value ([boolean_value, char_value]). 
-        Each subvalue is validated against the corresponding Field in self.fields.
-
-        Important: ValidationErrors are NOT raised here, clean() returns
-        the choice's errors to the main field MultivalueCheckboxMultipleChoiceField.
-        After validating all choices, MultivalueCheckboxMultipleChoiceField 
-        raises all ValidationErrors.
-        """
-
-        clean_data = []
-        errors = []
-        if not isinstance(value, list):
-            value = self.widget.decompress(value)
-        
-        for i, field in enumerate(self.fields):
-            # i = 0 -> boolean (checkbox)
-            # i = 1 -> character (text - optional)
-            field_value = value[i]
-
-            # only text field can be empty (checkbox is either True or False)
-            if field_value in self.empty_values: # self.empty_values = (None, '', [], (), {})
-                choice_labels = self.choice[1]
-                field_label = choice_labels[i]
-
-                errors.append(ValidationError(_('A {field_label} is required.').format(field_label=field_label), code='required'))
-                
-            try:
-                clean_data.append(field.clean(field_value))
-            except ValidationError as ee:
-                # Collect all validation errors of the subfield in a single list 
-                # (ee.error_list: list[ValidationError]). Skip duplicates.
-                errors.extend(e for e in ee.error_list if e not in errors)
-
-        out = self.compress(clean_data)
-        self.validate(out)
-        self.run_validators(out)
-        return out, errors
-
-    def compress(self, data_list):
-        '''Transform input data_list to a string with the correctly typed value for each subwidget:
-            - a boolean value for the checkbox
-            - (optionally) a string value for the text
-        '''
-
-        if isinstance(data_list, list):
-            return ','.join(map(str, data_list))
-        
-        return 'False,'
-    
+from .widgets import MultivalueCheckboxWidget, MultivalueCheckboxMultipleChoiceWidget
 
 class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
     '''
@@ -357,3 +285,74 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
         self.run_validators(value)
 
         return value
+
+class MultivalueCheckboxField(forms.MultiValueField):
+    widget = MultivalueCheckboxWidget
+
+    def __init__(self, choice=(), simple_checkbox=False):
+        self.choice = choice
+        self.simple_checkbox = simple_checkbox
+
+        fields = (
+            (forms.BooleanField(),) if simple_checkbox else
+            (    
+                forms.BooleanField(),
+                forms.CharField(),
+            )
+        )
+
+        super().__init__(fields)
+
+    def clean(self, value):
+        """This method applies to a multi-value field corresponding to 
+        a choice in MultivalueCheckboxMultipleChoiceField.
+        Every export choice consists of a boolean field and a char field.
+
+        Validate every subvalue in value ([boolean_value, char_value]). 
+        Each subvalue is validated against the corresponding Field in self.fields.
+
+        Important: ValidationErrors are NOT raised here, clean() returns
+        the choice's errors to the main field MultivalueCheckboxMultipleChoiceField.
+        After validating all choices, MultivalueCheckboxMultipleChoiceField 
+        raises all ValidationErrors.
+        """
+
+        clean_data = []
+        errors = []
+        if not isinstance(value, list):
+            value = self.widget.decompress(value)
+        
+        for i, field in enumerate(self.fields):
+            # i = 0 -> boolean (checkbox)
+            # i = 1 -> character (text - optional)
+            field_value = value[i]
+
+            # only text field can be empty (checkbox is either True or False)
+            if field_value in self.empty_values: # self.empty_values = (None, '', [], (), {})
+                choice_labels = self.choice[1]
+                field_label = choice_labels[i]
+
+                errors.append(ValidationError(_('A {field_label} is required.').format(field_label=field_label), code='required'))
+                
+            try:
+                clean_data.append(field.clean(field_value))
+            except ValidationError as ee:
+                # Collect all validation errors of the subfield in a single list 
+                # (ee.error_list: list[ValidationError]). Skip duplicates.
+                errors.extend(e for e in ee.error_list if e not in errors)
+
+        out = self.compress(clean_data)
+        self.validate(out)
+        self.run_validators(out)
+        return out, errors
+
+    def compress(self, data_list):
+        '''Transform input data_list to a string with the correctly typed value for each subwidget:
+            - a boolean value for the checkbox
+            - (optionally) a string value for the text
+        '''
+
+        if isinstance(data_list, list):
+            return ','.join(map(str, data_list))
+        
+        return 'False,'

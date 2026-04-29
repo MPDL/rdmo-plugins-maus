@@ -3,66 +3,6 @@ from django.templatetags.static import static
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-class MultivalueCheckboxWidget(forms.MultiWidget):
-    def __init__(self, simple_checkbox=False, attrs=None):
-        widgets = {
-            'checkbox': forms.CheckboxInput()
-        }
-
-        if not simple_checkbox:
-            widgets['text'] = forms.TextInput() 
-
-        super().__init__(widgets, attrs)
-
-    def decompress(self, value):
-        '''Transform input value to a list with the correctly typed value for each subwidget:
-            - a boolean value for the checkbox
-            - (optionally) a string value for the text
-        '''
-        boolean_value = {'False': False, 'True': True}
-        if isinstance(value, str):
-            splitted_value = value.split(',')
-            splitted_value[0] = boolean_value[splitted_value[0]]
-            return splitted_value
-        
-        return [False, '']
-    
-    def get_context(self, name, value, checkbox_label, text_label, attrs, extra_attrs=None):
-        '''Create context for MultivalueCheckboxMultipleChoiceWidget.option_template_name. '''
-        
-        context = super().get_context(name, value, attrs)
-        # value is a list/tuple of values, each corresponding to a widget
-        # in self.widgets.
-        if not isinstance(value, (list, tuple)):
-            value = self.decompress(value)
-
-        final_attrs = context['widget']['attrs']
-        subwidgets = []
-        for i, (widget_name, widget) in enumerate(
-            zip(self.widgets_names, self.widgets)
-        ):
-            try:
-                widget_value = value[i]
-            except IndexError:
-                widget_value = None
-            
-            extra_widget_attrs = extra_attrs.get(widget_name.strip('_'), {}) if isinstance(extra_attrs, dict) else {}
-            
-            widget_attrs = final_attrs.copy()
-            widget_attrs.update(extra_widget_attrs)
-            
-            widget_context = widget.get_context(name + widget_name, widget_value, widget_attrs)['widget']
-            if widget_name == '_text':
-                widget_context.update({'label': text_label})
-            if widget_name == '_checkbox':
-                widget_context.update({'label': checkbox_label})
-            
-            subwidgets.append(widget_context)
-        
-        context['widget']['subwidgets'] = subwidgets
-        return context
-    
-
 class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     '''
     A multiple choice widget with multivalue checkboxes as choices. 
@@ -205,7 +145,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
             'all': [static('plugins/css/multivalue_checkbox_multiple_choice.css')]
         }
         js = [format_html('<script src="{}" defer ></script>', static('plugins/js/multivalue_checkbox_multiple_choice.js'))]
-    
+
     @property
     def choices(self):
         return self._choices
@@ -322,6 +262,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     def create_option(
         self, widget, name, value, labels, key, selected, index, attrs=None
     ):
+        
         '''Create a choice consisting of a multi widget with a checkbox and a text. '''  
         
         index = str(index)
@@ -342,7 +283,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
                     extra_option_attrs[k] = v
 
         if 'id' in option_attrs:
-            checkbox_id = '%s_%s' % (option_attrs['id'], index)
+            checkbox_id = '%s_%s' % (f'{option_attrs["id"]}_checkbox', index)
             extra_option_attrs['checkbox'].update({'id': checkbox_id})
         
             if key != 'select_all_choice':
@@ -405,4 +346,63 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
             context['widget']['select_all_option'] = select_all_option
             context['widget']['optgroups'] = widget_optgroups
 
+        return context
+
+class MultivalueCheckboxWidget(forms.MultiWidget):
+    def __init__(self, simple_checkbox=False, attrs=None):
+        widgets = {
+            'checkbox': forms.CheckboxInput()
+        }
+
+        if not simple_checkbox:
+            widgets['text'] = forms.TextInput() 
+
+        super().__init__(widgets, attrs)
+
+    def decompress(self, value):
+        '''Transform input value to a list with the correctly typed value for each subwidget:
+            - a boolean value for the checkbox
+            - (optionally) a string value for the text
+        '''
+        boolean_value = {'False': False, 'True': True}
+        if isinstance(value, str):
+            splitted_value = value.split(',')
+            splitted_value[0] = boolean_value[splitted_value[0]]
+            return splitted_value
+        
+        return [False, '']
+    
+    def get_context(self, name, value, checkbox_label, text_label, attrs, extra_attrs=None):
+        '''Create context for MultivalueCheckboxMultipleChoiceWidget.option_template_name. '''
+        
+        context = super().get_context(name, value, attrs)
+        # value is a list/tuple of values, each corresponding to a widget
+        # in self.widgets.
+        if not isinstance(value, (list, tuple)):
+            value = self.decompress(value)
+
+        final_attrs = context['widget']['attrs']
+        subwidgets = []
+        for i, (widget_name, widget) in enumerate(
+            zip(self.widgets_names, self.widgets)
+        ):
+            try:
+                widget_value = value[i]
+            except IndexError:
+                widget_value = None
+            
+            extra_widget_attrs = extra_attrs.get(widget_name.strip('_'), {}) if isinstance(extra_attrs, dict) else {}
+            
+            widget_attrs = final_attrs.copy()
+            widget_attrs.update(extra_widget_attrs)
+            
+            widget_context = widget.get_context(name + widget_name, widget_value, widget_attrs)['widget']
+            if widget_name == '_text':
+                widget_context.update({'label': text_label})
+            if widget_name == '_checkbox':
+                widget_context.update({'label': checkbox_label})
+            
+            subwidgets.append(widget_context)
+        
+        context['widget']['subwidgets'] = subwidgets
         return context
