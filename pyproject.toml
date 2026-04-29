@@ -25,7 +25,7 @@ classifiers = [
 ]
 dependencies = [
     "requests>=2.31",
-    "rdmo>=2.3.2"
+    "PyYAML>=6.0.3"
 ]
 
 dynamic = ["version"]
