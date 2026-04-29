@@ -1,28 +1,29 @@
-{% if widget.sortable %}
-    {% if widget.select_all_option %}
-        {% include widget.select_all_option.template_name with widget=widget.select_all_option index=widget.select_all_option.index %}
+{% with field_id=widget.attrs.id %}
+    {% if widget.sortable %}
+        {% if widget.select_all_option %}
+            {% include widget.select_all_option.template_name with widget=widget.select_all_option index=widget.select_all_option.index %}
+        {% endif %}
+        <div id="selected_{{ field_id }}" class="selected" >
+            {% for option in widget.optgroups %}
+                {% if option.selected %}
+                    <div class="choice-block" id="{{ field_id }}_choice_block_{{ option.index }}" >
+                        {% include option.template_name with widget=option index=option.index field_id=field_id sortable=widget.sortable %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div id="unselected_{{ field_id }}" class="unselected" >
+            {% for option in widget.optgroups %}
+                {% if not option.selected %}
+                    <div class="choice-block" id="{{ field_id }}_choice_block_{{ option.index }}" >
+                        {% include option.template_name with widget=option index=option.index field_id=field_id sortable=widget.sortable %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% else %}
+        {% for option in widget.optgroups %}
+            {% include option.template_name with widget=option index=option.index field_id=field_id %}
+        {% endfor %}
     {% endif %}
-    <div {% if widget.attrs.id %} id="selected_{{ widget.attrs.id }}"{% endif %} class="selected" >
-        {% for option in widget.optgroups %}
-            {% if option.selected %}
-                <div class="choice-block" id="{{ option.index }}" >
-                    {% include option.template_name with widget=option index=option.index sortable=widget.sortable %}
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-    <div {% if widget.attrs.id %} id="unselected_{{ widget.attrs.id }}"{% endif %} class="unselected" >
-        {% for option in widget.optgroups %}
-            {% if not option.selected %}
-                <div class="choice-block" id="{{ option.index }}" >
-                    {% include option.template_name with widget=option index=option.index sortable=widget.sortable %}
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-{% else %}
-    {% for option in widget.optgroups %}
-        {% include option.template_name with widget=option index=option.index %}
-    {% endfor %}
-{% endif %}
-
+{% endwith %}

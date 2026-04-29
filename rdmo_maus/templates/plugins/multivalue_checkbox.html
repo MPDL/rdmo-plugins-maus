@@ -4,7 +4,7 @@
     {% if sortable %}
         <div 
             class="drag-icon fa fa-arrows drag" 
-            id="drag_icon_{{ index }}"
+            id="{{ field_id }}_drag_icon_{{ index }}"
             style="display: {% if widget.selected %}flex{% else %}none{% endif %};" 
             {% if widget.selected %}draggable="true"{% endif %}
         ></div>
@@ -17,7 +17,7 @@
             </span>
             {% if text %}
                 <span 
-                    id="id_file_path_{{ index }}" 
+                    id="{{ field_id }}_file_path_{{ index }}" 
                     class="multivalue-checkbox-text"
                     style="display: {% if widget.selected %}flex{% else %}none{% endif %};" 
                 >
@@ -29,14 +29,14 @@
     </label>
 </div>
 {% if widget.warnings %}
-    <div id="id_warnings_{{ index }}" class="help-block error" >
+    <div id="{{ field_id }}_warnings_{{ index }}" class="help-block error" >
         {% for warning in widget.warnings %}
             <p class="text-warning">* {{ warning }}</p>
         {% endfor %}
     </div>
 {% endif %}
 {% if widget.errors %}
-    <div id="id_errors_{{ index }}" class="help-block error" >
+    <div id="{{ field_id }}_errors_{{ index }}" class="help-block error" >
         {% for error in widget.errors %}
             <p class="text-danger">* {{ error.message }}</p>
         {% endfor %}
