@@ -12,8 +12,54 @@ from django.utils.translation import gettext_lazy as _
 
 from rdmo.core.utils import render_to_format
 from rdmo.domain.models import Attribute
+from rdmo.options.models import OptionSet
+from rdmo.questions.models import Page, QuestionSet
 from rdmo.projects.utils import get_value_path
 from rdmo.views.models import View
+
+def groupby_values(initial, v, groupby):
+    groupby_mapping = {
+        'attribute': v.attribute.uri,
+        'option': v.option.uri if v.option else None,
+        'text': v.text.lower(),
+        'set_index': v.set_index,
+        'set_prefix': v.set_prefix
+    }
+    _groupby = str(groupby_mapping[groupby])
+    if _groupby not in initial.keys():
+        initial[_groupby] = [v]
+    else:
+        initial[_groupby].append(v)
+    return initial
+
+def get_optionset_options(optionset_uri):
+        try:
+            options = OptionSet.objects.get(uri=optionset_uri).elements
+            return options
+        except KeyError:
+            return []
+        
+def get_questionsets(catalog):
+    queryset = QuestionSet.objects.filter_by_catalog(catalog) \
+                            .select_related('attribute') \
+                            .order_by('attribute__uri')
+
+    questionsets = {}
+    for questionset in queryset:
+        if questionset.attribute and questionset.attribute.uri not in questionsets:
+            questionsets[questionset.attribute.uri] = questionset
+    return questionsets
+
+def get_pages(catalog):
+    queryset = Page.objects.filter_by_catalog(catalog) \
+                            .select_related('attribute') \
+                            .order_by('attribute__uri')
+
+    pages = {}
+    for page in queryset:
+        if page.attribute and page.attribute.uri not in pages:
+            pages[page.attribute.uri] = page
+    return pages
 
 def zip(content_files):
     zip_buffer = BytesIO()
@@ -59,8 +105,14 @@ def get_licenses(spdx_ids):
 
 def get_project_license_ids(project, snapshot=None):
     attribute = Attribute.objects.get(uri='https://rdmorganiser.github.io/terms/domain/smp/software-license')
-    spdx_ids = [license.value for license in project.values.filter(snapshot=snapshot, attribute=attribute)]
-    spdx_ids = [id.removeprefix('Other Software License: ').removeprefix('Andere Software-Lizenz: ') for id in spdx_ids]
+    spdx_ids = [
+        license.value 
+        for license in project.values.filter(snapshot=snapshot, attribute=attribute)
+    ]
+    spdx_ids = [
+        id.removeprefix('Other Software License: ').removeprefix('Andere Software-Lizenz: ') 
+        for id in spdx_ids
+    ]
     return spdx_ids
 
 def render_to_license(request, project, snapshot=None, choice=None):
@@ -73,7 +125,10 @@ def render_to_license(request, project, snapshot=None, choice=None):
             }, status=200)
         
         if choice is not None:
-            spdx_id = next((l for l in spdx_ids if l.lower().replace('-', '_') == choice), choice)
+            spdx_id = next(
+                (l for l in spdx_ids if l.lower().replace('-', '_') == choice), 
+                choice
+            )
             spdx_ids = [spdx_id]
         
         license_contents = get_licenses(spdx_ids)
@@ -104,11 +159,10 @@ def render_to_license(request, project, snapshot=None, choice=None):
 def render_from_view(request, project, snapshot, view_uri, title, export_format, language_code=None):
     language = language_code if language_code is not None else get_language()
     with override(language):
-        view = View.objects.get(uri=view_uri)
-
         try:
+            view = View.objects.get(uri=view_uri)
             rendered_view = view.render(project, snapshot)
-        except TemplateSyntaxError:
+        except View.DoesNotExist or TemplateSyntaxError:
             return None
 
         response = render_to_format(
