@@ -27,19 +27,19 @@ function toggleAllChoices(selectAllCheckbox) {
   allChoices.forEach((choice, i) => {
     choice.checked = selectAllCheckbox.checked
     
-    let file_path = document.getElementById(`${fieldId}_file_path_${i}`)
-    if (file_path) {
-      file_path.style.display = selectAllCheckbox.checked ? 'flex' : 'none'
+    let filePath = document.getElementById(`${fieldId}_file_path_${i}`)
+    if (filePath) {
+      filePath.style.display = selectAllCheckbox.checked ? 'flex' : 'none'
     }
 
-    let warning_messages = document.getElementById(`${fieldId}_warnings_${i}`)
-    if (warning_messages) {
-      warning_messages.style.display = selectAllCheckbox.checked ? 'inline' : 'none'
+    let warningMessages = document.getElementById(`${fieldId}_warnings_${i}`)
+    if (warningMessages) {
+      warningMessages.style.display = selectAllCheckbox.checked ? 'inline' : 'none'
     }
 
-    let error_messages = document.getElementById(`${fieldId}_errors_${i}`)
-    if (error_messages) {
-      error_messages.style.display = selectAllCheckbox.checked ? 'block' : 'none'
+    let errorMessages = document.getElementById(`${fieldId}_errors_${i}`)
+    if (errorMessages) {
+      errorMessages.style.display = selectAllCheckbox.checked ? 'block' : 'none'
     }
 
     if (droppable) {
@@ -52,19 +52,19 @@ function toggleChoiceAttributesVisibility(checkbox) {
   const fieldId = `${checkbox.id.split('_')[0]}_${checkbox.id.split('_')[1]}`
   const index = checkbox.id.split('_').findLast((e) => e)
 
-  let file_path = document.getElementById(`${fieldId}_file_path_${index}`)
-  if (file_path) {
-    file_path.style.display = checkbox.checked ? 'flex' : 'none'
+  let filePath = document.getElementById(`${fieldId}_file_path_${index}`)
+  if (filePath) {
+    filePath.style.display = checkbox.checked ? 'flex' : 'none'
   }
 
-  let warning_messages = document.getElementById(`${fieldId}_warnings_${index}`)
-  if (warning_messages) {
-    warning_messages.style.display = checkbox.checked ? 'inline' : 'none'
+  let warningMessages = document.getElementById(`${fieldId}_warnings_${index}`)
+  if (warningMessages) {
+    warningMessages.style.display = checkbox.checked ? 'inline' : 'none'
   }
 
-  let error_messages = document.getElementById(`${fieldId}_errors_${index}`)
-  if (error_messages) {
-    error_messages.style.display = checkbox.checked ? 'block' : 'none'
+  let errorMessages = document.getElementById(`${fieldId}_errors_${index}`)
+  if (errorMessages) {
+    errorMessages.style.display = checkbox.checked ? 'block' : 'none'
   }
 
   if (droppable) {
@@ -79,9 +79,9 @@ function hideChoiceWarningMessages(text) {
   let duration = 1000
   clearTimeout(text._timer)
   text._timer = setTimeout(()=>{
-    let warning_messages = document.getElementById(`${fieldId}_warnings_${index}`)
-    if (warning_messages) {
-      warning_messages.style.display = 'none'
+    let warningMessages = document.getElementById(`${fieldId}_warnings_${index}`)
+    if (warningMessages) {
+      warningMessages.style.display = 'none'
     }
   }, duration)
 }
