@@ -1,7 +1,8 @@
 from django.utils.translation import gettext_lazy as _
 
-from ..forms.validators import validate_file_path, FilePathExtensionValidator
+from ..forms.validators import FilePathExtensionValidator, validate_file_path
 from ..utils import get_project_license_ids, render_from_view, render_to_license
+
 
 class SMPExportMixin:
     '''A mixin class that provides export choices for projects with a Software Management Plan (SMP) catalogue.
@@ -9,12 +10,12 @@ class SMPExportMixin:
     #####################
     ## SMP_EXPORTS_MAP ##
     #####################
-    
-    smp_exports_map (dict[str, dict[str, Any]]) contains a key value pair for every export choice and its values 
+
+    smp_exports_map (dict[str, dict[str, Any]]) contains a key value pair for every export choice and its values
     are dictionaries with three keys ('exports', 'render_function' and 'render_function_kwargs'):
 
     # 'exports'
-    'exports' assumes the use of ..forms.fields.py's MultivalueCheckboxMultipleChoiceField 
+    'exports' assumes the use of ..forms.fields.py's MultivalueCheckboxMultipleChoiceField
     for displaying the choices to the user.
 
     # 'render_function'
@@ -22,12 +23,12 @@ class SMPExportMixin:
 
     # 'render_function_kwargs'
     'render_function_kwargs' contains the arguments expected by 'render_function'.
-   
+
     Most render functions in this mixin expect a 'view_uri' argument. This is the URI of a view that the function uses
     as a template for creating the export choice. The views used by this mixin are:
     - "view-smp-citation.xml"
     - "view-smp-readme.xml"
-    - "view-smp-report.xml" 
+    - "view-smp-report.xml"
     and can be found [here](https://github.com/MPDL/rdmo-catalog/tree/MPG-catalogues/rdmorganiser/views).
 
     If an alternative template is required for any render_function, this view should be imported to RDMO
@@ -78,7 +79,7 @@ class SMPExportMixin:
             'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                 'export_choice': (),
                 'export_choice_validators': {
-                    'text': [validate_file_path]    
+                    'text': [validate_file_path]
                 },
                 'export_choice_attributes': {
                     'text': {
@@ -129,7 +130,7 @@ class SMPExportMixin:
                     if (len(v.get('exports', {}).get('export_choice_attributes', {})) > 0 and k != 'licenses')
                 }
             }
-            
+
             license_export_choices = {}
             license_ids = get_project_license_ids(self.project, self.snapshot)
             license_count = len(license_ids)
@@ -137,14 +138,14 @@ class SMPExportMixin:
                 key = f'license_{license_ids[0].lower().replace("-", "_")}'
                 license_export_choices[key] = ('False,LICENSE', ('LICENSE', _('File path')), key)
             elif license_count > 1:
-                for l in license_ids:
-                    key = f'license_{l.lower().replace("-", "_")}'
+                for _id in license_ids:
+                    key = f'license_{_id.lower().replace("-", "_")}'
                     license_export_choices[key] = (
-                        f'False,LICENSE_{l.replace("-", "_")}', 
-                        (f'LICENSE_{l.replace("-", "_")}', _('File path')), 
+                        f'False,LICENSE_{_id.replace("-", "_")}',
+                        (f'LICENSE_{_id.replace("-", "_")}', _('File path')),
                         key
                     )
-            
+
             smp_export_choices.get('choices', []).extend(license_export_choices.values())
 
             for k in ['choice_validators', 'choice_attributes']:
@@ -153,29 +154,29 @@ class SMPExportMixin:
                     for key in license_export_choices.keys()
                 }
                 smp_export_choices.get(k, {}).update(license_values)
-        
+
         smp_export_choice_keys = [c[2] for c in smp_export_choices.get('choices', [])]
         self.smp_export_choice_keys = smp_export_choice_keys
 
         return smp_export_choices
 
     def render_smp_export(self, choice):
-        '''Render smp-specific export choice from self.smp_exports_map. 
-        
-        SMP projects may have multiple licenses: 
+        '''Render smp-specific export choice from self.smp_exports_map.
+
+        SMP projects may have multiple licenses:
         - If only one license is defined, it will be exported as a LICENSE file with choice = 'licenses'.
         - For projects with multiple licenses:
             - To export all project licenses in a zip file use choice = 'licenses',
-            - To export only one license, use choice = `license_{*license_name}`, 
-              where *license_name must be a lowercased spdx license name with its hyphens resplaced with underscores. 
+            - To export only one license, use choice = `license_{*license_name}`,
+              where *license_name must be a lowercased spdx license name with its hyphens resplaced with underscores.
               Example: choice = 'license_lgpl_3.0_only' for LGPL-3.0-only
         '''
-        
+
         if choice.startswith('license_'):
-            exports, render_function, kwargs = self.smp_exports_map['licenses'].values()
+            _exports, render_function, kwargs = self.smp_exports_map['licenses'].values()
             kwargs['choice'] = choice.replace('license_', '')
         else:
-            exports, render_function, kwargs = self.smp_exports_map[choice].values()
-        
+            _exports, render_function, kwargs = self.smp_exports_map[choice].values()
+
         response = render_function(self.request, self.project, self.snapshot, **kwargs)
         return response

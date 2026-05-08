@@ -2,20 +2,21 @@ import base64
 import zipfile
 from io import BytesIO
 
-import requests
-
-from django.template import TemplateSyntaxError
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.template import TemplateSyntaxError
 from django.utils.translation import get_language, override
 from django.utils.translation import gettext_lazy as _
+
+import requests
 
 from rdmo.core.utils import render_to_format
 from rdmo.domain.models import Attribute
 from rdmo.options.models import OptionSet
-from rdmo.questions.models import Page, QuestionSet
 from rdmo.projects.utils import get_value_path
+from rdmo.questions.models import Page, QuestionSet
 from rdmo.views.models import View
+
 
 def groupby_values(initial, v, groupby):
     groupby_mapping = {
@@ -38,7 +39,7 @@ def get_optionset_options(optionset_uri):
             return options
         except KeyError:
             return []
-        
+
 def get_questionsets(catalog):
     queryset = QuestionSet.objects.filter_by_catalog(catalog) \
                             .select_related('attribute') \
@@ -87,10 +88,10 @@ def unzip(zip_buffer):
     return content_files
 
 def get_licenses(spdx_ids):
-    # https://github.com/spdx/license-list-data    
+    # https://github.com/spdx/license-list-data
     license_contents = {}
     for id in spdx_ids:
-        url = 'https://api.github.com/repos/spdx/license-list-data/contents/text/{spdx_id}.txt'.format(spdx_id=id)        
+        url = f'https://api.github.com/repos/spdx/license-list-data/contents/text/{id}.txt'
         response = requests.get(url, headers={'Accept': 'application/vnd.github+json'})
         try:
             response.raise_for_status()
@@ -98,42 +99,45 @@ def get_licenses(spdx_ids):
             decoded_bytes = base64.b64decode(encoded_content)
             content = decoded_bytes.decode('utf-8')
             license_contents[f'LICENSE_{id.replace("-", "_")}'] = content
-        except:
+        except requests.HTTPError:
             continue
-        
+
     return license_contents
 
 def get_project_license_ids(project, snapshot=None):
     attribute = Attribute.objects.get(uri='https://rdmorganiser.github.io/terms/domain/smp/software-license')
     spdx_ids = [
-        license.value 
+        license.value
         for license in project.values.filter(snapshot=snapshot, attribute=attribute)
     ]
     spdx_ids = [
-        id.removeprefix('Other Software License: ').removeprefix('Andere Software-Lizenz: ') 
+        id.removeprefix('Other Software License: ').removeprefix('Andere Software-Lizenz: ')
         for id in spdx_ids
     ]
     return spdx_ids
 
 def render_to_license(request, project, snapshot=None, choice=None):
         spdx_ids = get_project_license_ids(project, snapshot)
-        
+
         if len(spdx_ids) == 0: # no license(s) selected yet
             return render(request, 'core/error.html', {
                 'title': _('Something went wrong'),
                 'errors': [_('No license(s) selected yet for this project.')]
             }, status=200)
-        
+
         if choice is not None:
             spdx_id = next(
-                (l for l in spdx_ids if l.lower().replace('-', '_') == choice), 
+                (
+                    license_id for license_id in spdx_ids
+                    if license_id.lower().replace('-', '_') == choice
+                ),
                 choice
             )
             spdx_ids = [spdx_id]
-        
+
         license_contents = get_licenses(spdx_ids)
         if len(license_contents) == 1:
-            content = list(license_contents.values())[0]
+            content = next(iter(license_contents.values()))
             content_type = 'text/plain'
             file_name = 'LICENSE'
             content_disposition = f'attachment; filename="{file_name}"'
@@ -146,7 +150,7 @@ def render_to_license(request, project, snapshot=None, choice=None):
 
         else:
             return None
-        
+
         response = HttpResponse(
             content,
             headers={
@@ -162,7 +166,7 @@ def render_from_view(request, project, snapshot, view_uri, title, export_format,
         try:
             view = View.objects.get(uri=view_uri)
             rendered_view = view.render(project, snapshot)
-        except View.DoesNotExist or TemplateSyntaxError:
+        except (View.DoesNotExist, TemplateSyntaxError):
             return None
 
         response = render_to_format(

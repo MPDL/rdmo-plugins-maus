@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 
 from rdmo.projects.exports import Export
-from rdmo import __version__
 
 from .mixins import SMPExportMixin
+
 
 class SMPBaseLocalExport(SMPExportMixin, Export):
     def _render(self, choice):
@@ -13,7 +13,7 @@ class SMPBaseLocalExport(SMPExportMixin, Export):
                 'title': _('SMP-specific Plugin'),
                 'errors': [_('This plugin only works for projects with the Software Management Plan catalogue.')]
             }, status=200)
-        
+
         response = self.render_smp_export(choice)
 
         if response is None:
@@ -23,7 +23,7 @@ class SMPBaseLocalExport(SMPExportMixin, Export):
             }, status=200)
 
         return response
-    
+
 class SMPReportExport(SMPBaseLocalExport):
     def render(self):
         return self._render('report')
@@ -31,11 +31,11 @@ class SMPReportExport(SMPBaseLocalExport):
 class SMPReadmeExport(SMPBaseLocalExport):
     def render(self):
         return self._render('readme')
-    
+
 class SMPCitationExport(SMPBaseLocalExport):
     def render(self):
         return self._render('citation')
-    
+
 class SMPLicenseExport(SMPBaseLocalExport):
     def render(self):
         return self._render('licenses')

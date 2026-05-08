@@ -3,29 +3,30 @@ from django.templatetags.static import static
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+
 class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     '''
-    A multiple choice widget with multivalue checkboxes as choices. 
+    A multiple choice widget with multivalue checkboxes as choices.
     Widget for MultivalueCheckboxMultipleChoiceField.
-    
+
     ###########
     # CHOICES #
     ###########
-    
+
     Each choice consists of one or two fields:
-    - a checkbox field with a label 
+    - a checkbox field with a label
     - (optionally) a text input field with a label
 
     choices (list[tuple[str, tuple[str] | str, str]]) = [(values, labels, key), ...] with:
 
-    1. values (str): comma-separated values for each choice. 
-    First value is required and is the starting value for the checkbox (as a string: 'True' or 'False'), 
+    1. values (str): comma-separated values for each choice.
+    First value is required and is the starting value for the checkbox (as a string: 'True' or 'False'),
     second value is optional and is the starting value for the text.
     Examples of valid values:
     - 'False,my-text' -> checkbox's starting value is False, text's starting value is 'my-text'
     - 'True,' -> checkbox's starting value is True, text's starting value is ''
     - 'True' -> checkbox's starting value is True, text's starting value does NOT exist (no comma)
-    
+
     2. labels (str | tuple[str]): a string or a one or two-value tuple with the checkbox and text field labels (str).
     First value is required, second is optional.
     Examples of valid labels:
@@ -42,17 +43,18 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     # SORTABLE #
     ############
 
-    Per default, choices are displayed and processed as passed. Selected choices can be sortable if the parameter
-    SORTABLE equals True when initializing the field (preferable: MultivalueCheckboxMultipleChoiceField(..., sortable=True))
-    or the widget (MultivalueCheckboxMultipleChoiceWidget(..., sortable=True)).
+    Per default, choices are displayed and processed as passed. Selected choices can be
+    sortable if the parameter SORTABLE equals True when initializing the field
+    (preferable: MultivalueCheckboxMultipleChoiceField(..., sortable=True)) or
+    the widget (MultivalueCheckboxMultipleChoiceWidget(..., sortable=True)).
 
     #############################
     # INCLUDE_SELECT_ALL_CHOICE #
     #############################
 
     Per default, each choice must be individually selected. If the parameter INCLUDE_SELECT_ALL_CHOICE equals True when
-    initializing the field (preferable: MultivalueCheckboxMultipleChoiceField(..., include_select_all_choice=True)) or the
-    widget (MultivalueCheckboxMultipleChoiceWidget(..., include_select_all_choice=True)), the first 
+    initializing the field (preferable: MultivalueCheckboxMultipleChoiceField(..., include_select_all_choice=True))
+    or the widget (MultivalueCheckboxMultipleChoiceWidget(..., include_select_all_choice=True)), the first
     displayed choice is a 'Select all' choice. Clicking this choice will set all other choices as selected.
 
     #####################
@@ -61,19 +63,22 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
 
     Attributes common to all choices can be passed as usual:
     - MultivalueCheckboxMultipleChoiceWidget(..., attrs=attrs).
-    
-    Choice attributes can also be passed as follows: 
+
+    Choice attributes can also be passed as follows:
     - MultivalueCheckboxMultipleChoiceWidget(..., choice_attributes=choice_attributes) where:
 
-    - choice_attributes (dict[choice_key, dict['checkbox'|'text', attrs_dict]]) is a dictionary with choice_keys 
-    as keys and for values dictionaries with attributes for the checkbox widget and/or the text widget. choice_attributes 
+    - choice_attributes (dict[choice_key, dict['checkbox'|'text', attrs_dict]]) is a dictionary with choice_keys as keys
+    and for values dictionaries with attributes for the checkbox widget and/or the text widget. choice_attributes
     only need to contain choice_keys of choices with extra attributes, and only the widget ('checkbox' or 'text') that
     needs extra attributes must be included in the inner dictionary.
-    
+
     Examples:
 
-    If these are the choices = ((values_1, labels_1, 'choice_1'), (values_2, labels_2, 'choice_2'), (values_3, labels_3, 'choice_3')),
-    these would be valid choice_attributes:
+    If these are the choices = (
+        (values_1, labels_1, 'choice_1'),
+        (values_2, labels_2, 'choice_2'),
+        (values_3, labels_3, 'choice_3')
+    ), these would be valid choice_attributes:
     - choice_attributes = {
         'choice_1': {
             'checkbox': {'onchange': changeHandler()}
@@ -91,13 +96,16 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     Similar to choice_attributes, choice_warnings can also be passed to the widget:
     MultivalueCheckboxMultipleChoiceWidget(..., choice_warnings=choice_warnings)
 
-    choice_warnings only need to contain choice_keys of choices with warnings. If passed, these warnings 
+    choice_warnings only need to contain choice_keys of choices with warnings. If passed, these warnings
     appear below the corresponding choice like errors but they will not prevent form submission.
 
     Examples:
 
-    If these are the choices = ((values_1, labels_1, 'choice_1'), (values_2, labels_2, 'choice_2'), (values_3, labels_3, 'choice_3')),
-    these would be valid choice_warnings:
+    If these are the choices = (
+        (values_1, labels_1, 'choice_1'),
+        (values_2, labels_2, 'choice_2'),
+        (values_3, labels_3, 'choice_3')
+    ), these would be valid choice_warnings:
     - choice_warnings (dict[str, list[str]]) = {
         'choice_2': ['Warning_1 for choice_2', 'Warning_2 for choice_2'],
         'choice_3': ['Single warning for choice_3']
@@ -117,22 +125,29 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         'checkbox': {'onchange': 'toggleAllChoices(this)'}
     }
     default_choice_attributes = {
-        'checkbox': {'onchange': 'toggleChoiceAttributesVisibility(this)'}, 
+        'checkbox': {'onchange': 'toggleChoiceAttributesVisibility(this)'},
         'text': {'oninput': 'hideChoiceWarningMessages(this)', 'class': 'form-control multivalue-checkbox-text-input'}
     }
-    
-    def __init__(self, *, sortable=False, include_select_all_choice=False, choice_attributes={}, choice_warnings={}, **kwargs):
+
+    def __init__(
+        self, *, sortable=False, include_select_all_choice=False, choice_attributes={}, choice_warnings={}, **kwargs
+    ):
         '''
         MultivalueCheckboxMultipleChoiceWidget.__init__
 
-        :param list[tuple[str, tuple[str] | str, str]] choices: List of choices. Each choice is a tuple of value(s) (comma-separated str), label(s) (tuple[str] or str), and a key (str). Check out the class docstring for details.
+        :param list[tuple[str, tuple[str] | str, str]] choices: List of choices. Each choice is a tuple of
+            value(s) (comma-separated str), label(s) (tuple[str] or str), and a key (str).
+            Check out the class docstring for details.
         :param bool include_select_all_choice: If True, first choice will be a 'Select all' choice
         :param bool sortable: If True, selected choices will be sortable
-        :param dict[str, dict['checkbox'|'text', list[validators]]] choice_attributes: choice-specific validators for checkbox and/or text choice subfields. Check out the class docstring for details.
-        :param dict[str, list[str]] choice_warnings: choice-specific lists of warnings. Check out the class docstring for details.
+        :param dict[str, dict['checkbox'|'text', list[validators]]] choice_attributes:
+            choice-specific validators for checkbox and/or text choice subfields.
+            Check out the class docstring for details.
+        :param dict[str, list[str]] choice_warnings: choice-specific lists of warnings.
+            Check out the class docstring for details.
         :param kwargs: rest of keyword arguments of django's SelectMultiple widget
         '''
-        
+
         self.include_select_all_choice = include_select_all_choice
         self.sortable = sortable
         self.choice_warnings = choice_warnings
@@ -144,17 +159,19 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         css = {
             'all': [static('plugins/css/multivalue_checkbox_multiple_choice.css')]
         }
-        js = [format_html('<script src="{}" defer ></script>', static('plugins/js/multivalue_checkbox_multiple_choice.js'))]
+        js = [
+            format_html('<script src="{}" defer></script>', static('plugins/js/multivalue_checkbox_multiple_choice.js'))
+        ]
 
     @property
     def choices(self):
         return self._choices
-    
+
     @choices.setter
     def choices(self, new_choices):
         first_choice = new_choices[0] if len(new_choices) > 0 else None
         if (
-            self.include_select_all_choice and 
+            self.include_select_all_choice and
             (first_choice is not None and first_choice[2] != self.select_all_choice[2])
         ):
             new_choices = [self.select_all_choice, *new_choices]
@@ -165,14 +182,14 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     @property
     def choice_widgets(self):
         return self._choice_widgets
-    
+
     @choice_widgets.setter
     def choice_widgets(self, new_choices):
         new_choice_widgets = {}
 
         for c in new_choices:
             simple_checkbox = False
-            
+
             values = c[0].split(',')
             choice_key = c[2]
             if isinstance(values, list) and len(values) == 1:
@@ -181,11 +198,11 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
             new_choice_widgets[choice_key] = MultivalueCheckboxWidget(simple_checkbox=simple_checkbox)
 
         self._choice_widgets = new_choice_widgets
-    
+
     @property
     def choice_keys(self):
         return self._choice_keys
-    
+
     @choice_keys.setter
     def choice_keys(self, new_choices):
         new_choice_keys = [c[2] for c in new_choices]
@@ -194,7 +211,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     @property
     def choice_attributes(self):
         return self._choice_attributes
-    
+
     @choice_attributes.setter
     def choice_attributes(self, new_attributes):
         self._choice_attributes = new_attributes
@@ -219,7 +236,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         '''Return a list of choices for this widget.
         Each choice consists of a multi widget with a checkbox and a text.
         '''
-        
+
         transformed_value = []
         selected_option_keys = []
         for v in value:
@@ -238,11 +255,11 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
             option_value = transformed_value[i] if i is not None else option_value
             choice_widget = self.choice_widgets[option_key]
             decompressed_option_value = choice_widget.decompress(option_value)
-            
+
             selected = self.allow_multiple_selected and decompressed_option_value[0]
-            
+
             option_name = f'{name}_{option_key}'
-            
+
             if self.include_select_all_choice:
                 index = option_key if option_key == 'select_all_choice' else index - 1
 
@@ -262,17 +279,17 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     def create_option(
         self, widget, name, value, labels, key, selected, index, attrs=None
     ):
-        
-        '''Create a choice consisting of a multi widget with a checkbox and a text. '''  
-        
+
+        '''Create a choice consisting of a multi widget with a checkbox and a text. '''
+
         index = str(index)
         option_attrs = (
             self.build_attrs(self.attrs, attrs) if self.option_inherits_attrs else {}
         )
 
         extra_option_attrs = (
-            self.select_all_choice_attributes 
-            if key == 'select_all_choice' 
+            self.select_all_choice_attributes
+            if key == 'select_all_choice'
             else self.choice_attributes.get(key, {})
         )
         if key != 'select_all_choice':
@@ -283,11 +300,17 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
                     extra_option_attrs[k] = v
 
         if 'id' in option_attrs:
-            checkbox_id = '%s_%s' % (f'{option_attrs["id"]}_checkbox', index)
+            checkbox_id = '{id_prefix}_{id_index}'.format(
+                id_prefix=f'{option_attrs["id"]}_checkbox',
+                id_index=index
+            )
             extra_option_attrs['checkbox'].update({'id': checkbox_id})
-        
+
             if key != 'select_all_choice':
-                text_id = '%s_%s' % (f'{option_attrs["id"]}_text', index)
+                text_id = '{id_prefix}_{id_index}'.format(
+                    id_prefix=f'{option_attrs["id"]}_text',
+                    id_index=index
+                )
                 extra_option_attrs['text'].update({'id': text_id})
 
             option_attrs = {}
@@ -318,31 +341,35 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
             'selected': selected,
             'template_name': self.option_template_name,
         }
-    
+
     def value_from_datadict(self, data, files, name):
         if self.sortable:
             self.choice_keys, self.choices = self.sort_choices(data, name)
-        
+
         value = []
         for multiwidget_name in self.choice_keys:
             choice_widget = self.choice_widgets[multiwidget_name]
             multiwidget_value = choice_widget.value_from_datadict(data, files, f'{name}_{multiwidget_name}')
-            
+
             if multiwidget_value[0]:
-                choice_value = multiwidget_name if len(multiwidget_value) == 1 else f'{multiwidget_name},{multiwidget_value[1]}'
+                choice_value = (
+                    multiwidget_name
+                    if len(multiwidget_value) == 1
+                    else f'{multiwidget_name},{multiwidget_value[1]}'
+                )
                 value.append(choice_value)
 
         return value
-    
+
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
         context['widget']['sortable'] = self.sortable
-        
+
         if self.sortable and self.include_select_all_choice:
             widget_optgroups = context['widget']['optgroups']
             select_all_option = widget_optgroups[0]
             widget_optgroups = widget_optgroups[1:]
-            
+
             context['widget']['select_all_option'] = select_all_option
             context['widget']['optgroups'] = widget_optgroups
 
@@ -355,7 +382,7 @@ class MultivalueCheckboxWidget(forms.MultiWidget):
         }
 
         if not simple_checkbox:
-            widgets['text'] = forms.TextInput() 
+            widgets['text'] = forms.TextInput()
 
         super().__init__(widgets, attrs)
 
@@ -369,12 +396,12 @@ class MultivalueCheckboxWidget(forms.MultiWidget):
             splitted_value = value.split(',')
             splitted_value[0] = boolean_value[splitted_value[0]]
             return splitted_value
-        
+
         return [False, '']
-    
+
     def get_context(self, name, value, checkbox_label, text_label, attrs, extra_attrs=None):
         '''Create context for MultivalueCheckboxMultipleChoiceWidget.option_template_name. '''
-        
+
         context = super().get_context(name, value, attrs)
         # value is a list/tuple of values, each corresponding to a widget
         # in self.widgets.
@@ -390,19 +417,19 @@ class MultivalueCheckboxWidget(forms.MultiWidget):
                 widget_value = value[i]
             except IndexError:
                 widget_value = None
-            
+
             extra_widget_attrs = extra_attrs.get(widget_name.strip('_'), {}) if isinstance(extra_attrs, dict) else {}
-            
+
             widget_attrs = final_attrs.copy()
             widget_attrs.update(extra_widget_attrs)
-            
+
             widget_context = widget.get_context(name + widget_name, widget_value, widget_attrs)['widget']
             if widget_name == '_text':
                 widget_context.update({'label': text_label})
             if widget_name == '_checkbox':
                 widget_context.update({'label': checkbox_label})
-            
+
             subwidgets.append(widget_context)
-        
+
         context['widget']['subwidgets'] = subwidgets
         return context
