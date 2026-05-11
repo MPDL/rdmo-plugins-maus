@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-29 16:06+0000\n"
+"POT-Creation-Date: 2026-05-11 12:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,13 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: exports/mixins.py:39 exports/mixins.py:59 exports/mixins.py:94
-#: exports/mixins.py:138 exports/mixins.py:144 forms/validators.py:53
-#: imports/mixins.py:96 imports/mixins.py:111
+#: exports/mixins.py:40 exports/mixins.py:60 exports/mixins.py:95
+#: exports/mixins.py:139 exports/mixins.py:145 forms/validators.py:54
+#: imports/mixins.py:98 imports/mixins.py:113
 msgid "File path"
 msgstr "Dateipfad"
 
-#: exports/mixins.py:94
+#: exports/mixins.py:95
 msgid "SMP Report"
 msgstr "SMP-Report"
 
@@ -40,7 +40,7 @@ msgstr ""
 "Dieses Plugin funktioniert nur für Projekte mit dem Software-Management-Plan-"
 "Katalog."
 
-#: exports/smp_exports.py:21 utils.py:123
+#: exports/smp_exports.py:21 utils.py:124
 msgid "Something went wrong"
 msgstr "Etwas ist schief gelaufen"
 
@@ -48,78 +48,78 @@ msgstr "Etwas ist schief gelaufen"
 msgid "Export choice could not be created."
 msgstr "Exportoption konnte nicht erstellt werden."
 
-#: forms/fields.py:123 forms/widgets.py:111
+#: forms/fields.py:130 forms/widgets.py:119
 msgid "Select all"
 msgstr "Alle auswählen"
 
-#: forms/fields.py:258
+#: forms/fields.py:269
 msgid "At least one choice must be selected."
 msgstr "Mindestens eine Option muss ausgewählt werden."
 
-#: forms/fields.py:335
-#, python-brace-format
-msgid "A {field_label} is required."
-msgstr "Ein(e) {field_label} ist erforderlich."
+#: forms/fields.py:347
+msgid "A {fl} is required."
+msgstr "Ein(e) {fl} ist erforderlich."
 
-#: forms/validators.py:15
+#: forms/validators.py:16
 msgid "whitespace"
 msgstr "Leerzeichen"
 
-#: forms/validators.py:20
-#, python-brace-format
+#: forms/validators.py:21
 msgid ""
-"{field_name} contains special character(s): \"{spec_chars}\". Allowed "
-"characters are: {allowed_char_name_str}."
+"{fn} contains special character(s): \"{sc}\". Allowed characters are: {acns}."
 msgstr ""
-"{field_name} enthält Sonderzeichen: \"{spec_chars}\". Zulässige "
-"Zeichen sind: {allowed_char_name_str}."
+"{fn} enthält Sonderzeichen: \"{sc}\". Zulässige Zeichen "
+"sind: {acns}."
 
-#: forms/validators.py:30
+#: forms/validators.py:31
 #, python-brace-format
 msgid ""
 "{field_name} must have at most {max_length} characters (it has {len_value})."
 msgstr ""
-"{field_name} darf höchstens {max_length} Zeichen lang sein (es enthält {len_value})."
+"{field_name} darf höchstens {max_length} Zeichen lang sein (es enthält "
+"{len_value})."
 
-#: forms/validators.py:40
+#: forms/validators.py:41
 #, python-brace-format
 msgid ""
 "{field_name} must have at least {min_length} characters (it has {len_value})."
 msgstr ""
-"{field_name} muss mindestens {min_length} Zeichen lang sein (es enthält {len_value})."
+"{field_name} muss mindestens {min_length} Zeichen lang sein (es enthält "
+"{len_value})."
 
-#: forms/validators.py:57
+#: forms/validators.py:58
 msgid "alphanumeric, slash, hyphen, underscore, and period"
 msgstr "alphanumerisch, Schrägstrich, Bindestrich, Unterstrich und Punkt"
 
-#: forms/validators.py:71
+#: forms/validators.py:72
 #, python-brace-format
 msgid "File must be in {valid_extension} format."
 msgstr "Datei muss im {valid_extension}-Format vorliegen."
 
-#: imports/mixins.py:102
+#: imports/mixins.py:104
 msgid "example_folder/example_file_name.xml"
 msgstr "beispiel_ordner/beispiel_dateiname.xml"
 
-#: imports/mixins.py:135
+#: imports/mixins.py:137
 msgid "Repository dependency graph"
 msgstr "Abhängigkeitsgraph des Repositoriums"
 
-#: imports/mixins.py:144
+#: imports/mixins.py:146
 msgid "Repository languages"
 msgstr "Sprachen des Repositoriums"
 
-#: imports/mixins.py:189
+#: imports/mixins.py:191
 msgid "Import error"
 msgstr "Fehler beim Import"
 
-#: imports/mixins.py:190
+#: imports/mixins.py:192
 msgid ""
 "Either no information was found in the repository, or it could not be "
 "imported."
 msgstr ""
-"Entweder wurden im Repositorium keine Informationen gefunden, oder sie konnten nicht importiert werden."
+"Entweder wurden im Repositorium keine Informationen gefunden, oder sie "
+"konnten nicht importiert werden."
 
-#: utils.py:124
+#: utils.py:125
 msgid "No license(s) selected yet for this project."
 msgstr "Für dieses Projekt wurde(n) noch keine Lizenz(en) ausgewählt."
