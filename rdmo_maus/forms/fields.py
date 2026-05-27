@@ -131,7 +131,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
     _choice_fields = {}
     _choice_keys = []
 
-    def __init__(self, *, include_select_all_choice=False, sortable=False, choice_validators={}, **kwargs):
+    def __init__(self, *, include_select_all_choice=False, sortable=False, choice_validators=None, **kwargs):
         '''
         MultivalueCheckboxMultipleChoiceField.__init__
 
@@ -147,7 +147,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
         '''
 
         self.include_select_all_choice = include_select_all_choice
-        self.choice_validators=choice_validators
+        self.choice_validators=choice_validators if isinstance(choice_validators, dict) else {}
 
         self.widget = MultivalueCheckboxMultipleChoiceWidget(
             sortable=sortable,
@@ -233,7 +233,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
 
         value_lst = value.split(',')
         value_key = value_lst[0]
-        for (values, labels, key) in self.choices:
+        for (_values, _labels, key) in self.choices:
             if value_key == key:
                 return True
 

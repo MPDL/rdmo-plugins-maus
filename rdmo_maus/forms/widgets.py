@@ -130,7 +130,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     }
 
     def __init__(
-        self, *, sortable=False, include_select_all_choice=False, choice_attributes={}, choice_warnings={}, **kwargs
+        self, *, sortable=False, include_select_all_choice=False, choice_attributes=None, choice_warnings=None, **kwargs
     ):
         '''
         MultivalueCheckboxMultipleChoiceWidget.__init__
@@ -150,8 +150,8 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
 
         self.include_select_all_choice = include_select_all_choice
         self.sortable = sortable
-        self.choice_warnings = choice_warnings
-        self.choice_attributes = choice_attributes
+        self.choice_warnings = choice_warnings if isinstance(choice_warnings, dict) else {}
+        self.choice_attributes = choice_attributes if isinstance(choice_attributes, dict) else {}
 
         super().__init__(**kwargs)
 
@@ -411,7 +411,7 @@ class MultivalueCheckboxWidget(forms.MultiWidget):
         final_attrs = context['widget']['attrs']
         subwidgets = []
         for i, (widget_name, widget) in enumerate(
-            zip(self.widgets_names, self.widgets)
+            zip(self.widgets_names, self.widgets, strict=False)
         ):
             try:
                 widget_value = value[i]

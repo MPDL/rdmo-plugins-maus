@@ -35,7 +35,7 @@ class SMPExportMixin:
     If an alternative template is required for any render_function, this view should be imported to RDMO
     and its URI should be specified as the 'view_uri' value.
     '''
-    
+
     @property
     def smp_exports_map(self):
         pdf_export_format = 'pdf' in dict(settings.EXPORT_FORMATS)
