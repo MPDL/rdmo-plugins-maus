@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from ..forms.validators import FilePathExtensionValidator, validate_file_path
@@ -34,83 +35,112 @@ class SMPExportMixin:
     If an alternative template is required for any render_function, this view should be imported to RDMO
     and its URI should be specified as the 'view_uri' value.
     '''
-    smp_exports_map = {
-        'readme': {
-            'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                'export_choice': ('False,README.md', ('README', _('File path')), 'readme'),
-                'export_choice_validators': {
-                    'text': [validate_file_path, FilePathExtensionValidator('.md')]
+    
+    @property
+    def smp_exports_map(self):
+        pdf_export_format = 'pdf' in dict(settings.EXPORT_FORMATS)
+
+        smp_exports_map = {
+            'readme': {
+                'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                    'export_choice': ('False,README.md', ('README', _('File path')), 'readme'),
+                    'export_choice_validators': {
+                        'text': [validate_file_path, FilePathExtensionValidator('.md')]
+                    },
+                    'export_choice_attributes': {
+                        'text': {
+                                'placeholder': 'README.md',
+                            }
+                    }
                 },
-                'export_choice_attributes': {
-                    'text': {
-                            'placeholder': 'README.md',
-                        }
+                'render_function': render_from_view,
+                'render_function_kwargs': {
+                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-readme',
+                    'title': 'README.md',
+                    'export_format': 'markdown',
+                    'language_code': 'en'
                 }
             },
-            'render_function': render_from_view,
-            'render_function_kwargs': {
-                'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-readme',
-                'title': 'README.md',
-                'export_format': 'markdown',
-                'language_code': 'en'
-            }
-        },
-        'citation': {
-            'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                'export_choice': ('False,CITATION.cff', ('CITATION', _('File path')), 'citation'),
-                'export_choice_validators': {
-                    'text': [validate_file_path, FilePathExtensionValidator('.cff')]
+            'citation': {
+                'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                    'export_choice': ('False,CITATION.cff', ('CITATION', _('File path')), 'citation'),
+                    'export_choice_validators': {
+                        'text': [validate_file_path, FilePathExtensionValidator('.cff')]
+                    },
+                    'export_choice_attributes': {
+                        'text': {
+                                'placeholder': 'CITATION.cff',
+                            }
+                    }
                 },
-                'export_choice_attributes': {
-                    'text': {
-                            'placeholder': 'CITATION.cff',
-                        }
+                'render_function': render_from_view,
+                'render_function_kwargs': {
+                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-citation',
+                    'title': 'CITATION.cff',
+                    'export_format': 'plain',
+                    'language_code': 'en'
                 }
             },
-            'render_function': render_from_view,
-            'render_function_kwargs': {
-                'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-citation',
-                'title': 'CITATION.cff',
-                'export_format': 'plain',
-                'language_code': 'en'
-            }
-        },
-        'licenses': {
-            'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                'export_choice': (),
-                'export_choice_validators': {
-                    'text': [validate_file_path]
+            'licenses': {
+                'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                    'export_choice': (),
+                    'export_choice_validators': {
+                        'text': [validate_file_path]
+                    },
+                    'export_choice_attributes': {
+                        'text': {
+                                'placeholder': 'LICENSE',
+                            }
+                    }
                 },
-                'export_choice_attributes': {
-                    'text': {
-                            'placeholder': 'LICENSE',
-                        }
-                }
+                'render_function': render_to_license,
+                'render_function_kwargs': {}
             },
-            'render_function': render_to_license,
-            'render_function_kwargs': {}
-        },
-        'report': {
-            'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                'export_choice': ('False,data/smp_report.html', (_('SMP Report'), _('File path')), 'report'),
-                'export_choice_validators': {
-                    'text': [validate_file_path, FilePathExtensionValidator('.html')]
+            'report': {
+                'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                    'export_choice': ('False,data/smp_report.html', (_('SMP Report'), _('File path')), 'report'),
+                    'export_choice_validators': {
+                        'text': [validate_file_path, FilePathExtensionValidator('.html')]
+                    },
+                    'export_choice_attributes': {
+                        'text': {
+                                'placeholder': 'data/smp_report.html',
+                            }
+                    }
                 },
-                'export_choice_attributes': {
-                    'text': {
-                            'placeholder': 'data/smp_report.html',
-                        }
+                'render_function': render_from_view,
+                'render_function_kwargs': {
+                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-report',
+                    'title': 'smp_report.html',
+                    'export_format': 'html',
+                    'language_code': 'en'
                 }
-            },
-            'render_function': render_from_view,
-            'render_function_kwargs': {
-                'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-report',
-                'title': 'smp_report.html',
-                'export_format': 'html',
-                'language_code': 'en'
             }
         }
-    }
+
+        if pdf_export_format:
+            smp_exports_map['report'] = {
+                'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                    'export_choice': ('False,data/smp_report.pdf', (_('SMP Report'), _('File path')), 'report'),
+                    'export_choice_validators': {
+                        'text': [validate_file_path, FilePathExtensionValidator('.pdf')]
+                    },
+                    'export_choice_attributes': {
+                        'text': {
+                                'placeholder': 'data/smp_report.pdf',
+                            }
+                    }
+                },
+                'render_function': render_from_view,
+                'render_function_kwargs': {
+                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-report',
+                    'title': 'smp_report.pdf',
+                    'export_format': 'pdf',
+                    'language_code': 'en'
+                }
+            }
+
+        return smp_exports_map
 
     @property
     def smp_export_choices(self):
@@ -168,15 +198,15 @@ class SMPExportMixin:
         - For projects with multiple licenses:
             - To export all project licenses in a zip file use choice = 'licenses',
             - To export only one license, use choice = `license_{*license_name}`,
-              where *license_name must be a lowercased spdx license name with its hyphens resplaced with underscores.
+              where *license_name must be a lowercased spdx license name with its hyphens replaced with underscores.
               Example: choice = 'license_lgpl_3.0_only' for LGPL-3.0-only
         '''
 
         if choice.startswith('license_'):
-            _exports, render_function, kwargs = self.smp_exports_map['licenses'].values()
+            _exports, render_function, kwargs = self.smp_exports_map.get('licenses').values()
             kwargs['choice'] = choice.replace('license_', '')
         else:
-            _exports, render_function, kwargs = self.smp_exports_map[choice].values()
+            _exports, render_function, kwargs = self.smp_exports_map.get(choice).values()
 
         response = render_function(self.request, self.project, self.snapshot, **kwargs)
         return response
