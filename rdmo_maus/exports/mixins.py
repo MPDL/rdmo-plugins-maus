@@ -81,6 +81,26 @@ class SMPExportMixin:
                     'language_code': 'en'
                 }
             },
+            'codemeta': {
+                'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                    'export_choice': ('False,codemeta.json', ('CodeMeta', _('File path')), 'codemeta'),
+                    'export_choice_validators': {
+                        'text': [validate_file_path, FilePathExtensionValidator('.json')]
+                    },
+                    'export_choice_attributes': {
+                        'text': {
+                                'placeholder': 'codemeta.json',
+                            }
+                    }
+                },
+                'render_function': render_from_view,
+                'render_function_kwargs': {
+                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-codemeta',
+                    'title': 'codemeta.json',
+                    'export_format': 'plain',
+                    'language_code': 'en'
+                }
+            },
             'licenses': {
                 'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'export_choice': (),
