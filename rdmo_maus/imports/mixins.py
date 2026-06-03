@@ -1,4 +1,5 @@
 import base64
+import json
 from functools import partial, reduce
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -8,7 +9,6 @@ from django.utils.translation import gettext_lazy as _
 
 import requests
 import yaml
-import json
 
 from rdmo.core.imports import handle_fetched_file
 from rdmo.core.plugins import get_plugin
@@ -950,7 +950,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 ))
 
         return pid_values
-    
+
     def get_title(self, metadata_dict, key):
         dict_value = metadata_dict.get(key)
         v_attribute = self.check_attribute(self.metadata_attr_mapping.get('title'))
@@ -960,7 +960,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             title_value = self.create_value(v_attribute, text=dict_value)
 
         return title_value
-    
+
     def get_codemeta_licenses(self, codemeta_data):
         codemeta_licenses = codemeta_data.get('license')
 
@@ -978,7 +978,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 license_values.append(license_value)
 
         return license_values
-    
+
     def get_codemeta_authors(self, codemeta_data):
         raw_codemeta_authors = []
         for key in ['author', 'contributor', 'maintainer']:
@@ -990,13 +990,13 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     raw_codemeta_authors.append(raw_author)
 
         codemeta_authors = []
-        codemeta_roles = []     
+        codemeta_roles = []
         for author in raw_codemeta_authors:
             raw_type = (
-                author.get('@type') if '@type' in author 
+                author.get('@type') if '@type' in author
                 else(author.get('type') if 'type' in author else None)
             )
-            
+
             type = (
                 'person' if raw_type == 'Person'
                 else('entity' if raw_type == 'Organization' else raw_type)
@@ -1089,7 +1089,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                             else (a.get('@id') if '@id' in a else None)
                         )
 
-                        v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('affiliation'))
+                        v_attribute = self.check_attribute(
+                            self.metadata_attr_mapping.get('contributor', {}).get('affiliation')
+                        )
                         if affiliation_name and v_attribute:
                             contributor_values.append(self.create_value(
                                 v_attribute,
@@ -1099,7 +1101,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                                 text=affiliation_name
                             ))
 
-                        v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('ror-id'))
+                        v_attribute = self.check_attribute(
+                            self.metadata_attr_mapping.get('contributor', {}).get('ror-id')
+                        )
                         if affiliation_id and affiliation_id.startswith('https://ror.org/') and v_attribute:
                             contributor_values.append(self.create_value(
                                 v_attribute,
@@ -1114,7 +1118,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             author_id = (
                 role.get('author') if 'author' in role
                 else (
-                    role.get('contributor') if 'contributor' in role 
+                    role.get('contributor') if 'contributor' in role
                     else (role.get('maintainer') if 'maintainer' in role else None)
                 )
             )
@@ -1122,7 +1126,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             if author_id:
                 author_index = next(
                     (
-                        v.set_index for v in contributor_values 
+                        v.set_index for v in contributor_values
                         if (
                             v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('orcid') and
                             v.text == author_id
@@ -1140,7 +1144,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                         i + 1 + max(author_affiliation_indizes)
                         if len(author_affiliation_indizes) > 0
                         else i
-                    ) 
+                    )
                     v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('role'))
                     contributor_values.append(self.create_value(
                         v_attribute,
@@ -1151,7 +1155,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     ))
 
         return contributor_values
-    
+
     def get_codemeta_identifiers(self, codemeta_data):
         identifiers = []
         codemeta_identifiers = codemeta_data.get('identifier')
@@ -1304,13 +1308,13 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             import_values = self.merge_application_class([application_class_value], import_values)
 
         return import_values
-    
+
     def process_codemeta(self, url, import_values, headers, get_codemeta):
         # https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md
 
         codemeta_content = get_codemeta(url, headers)
         codemeta_data = json.loads(codemeta_content)
-        
+
 
         if 'name' in codemeta_data:
             title_value = self.get_title(codemeta_data, 'name')

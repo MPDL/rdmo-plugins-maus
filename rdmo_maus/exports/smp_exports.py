@@ -35,7 +35,7 @@ class SMPReadmeExport(SMPBaseLocalExport):
 class SMPCitationExport(SMPBaseLocalExport):
     def render(self):
         return self._render('citation')
-    
+
 class SMPCodeMetaExport(SMPBaseLocalExport):
     def render(self):
         return self._render('codemeta')
