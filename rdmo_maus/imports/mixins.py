@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 
 import requests
 import yaml
+import json
 
 from rdmo.core.imports import handle_fetched_file
 from rdmo.core.plugins import get_plugin
@@ -75,7 +76,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         'title': 'https://rdmorganiser.github.io/terms/domain/project/title',
         'contributor': {
             'family-names': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/family-name',
+            'familyName': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/family-name',
             'given-names': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/given-name',
+            'givenName': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/given-name',
             'name': 'https://rdmorganiser.github.io/terms/domain/project/partner/name',
             'orcid': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/orcid',
             'website': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/website',
@@ -122,6 +125,21 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 },
                 'process_method': self.process_citation,
                 'process_method_kwargs': {'get_citation': self.get_citation}
+            },
+            'codemeta': {
+                'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                    'import_choice': ('False,codemeta.json', ('CodeMeta', _('File path')), 'codemeta'),
+                    'import_choice_validators': {
+                        'text': [FilePathExtensionValidator('.json')]
+                    },
+                    'import_choice_attributes': {
+                        'text': {
+                            'placeholder': 'codemeta.json',
+                        }
+                    }
+                },
+                'process_method': self.process_codemeta,
+                'process_method_kwargs': {'get_codemeta': self.get_codemeta}
             },
             'license': {
                 'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
@@ -747,16 +765,6 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         return value
 
-    def get_cff_title(self, cff_data):
-        cff_value = cff_data.get('title')
-        v_attribute = self.check_attribute(self.metadata_attr_mapping.get('title'))
-
-        title_value = None
-        if cff_value and v_attribute:
-            title_value = self.create_value(v_attribute, text=cff_value)
-
-        return title_value
-
     def get_license_option(self, license_optionset_uri, license_id):
         options = get_optionset_options(license_optionset_uri)
 
@@ -900,6 +908,12 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             (None, None)
         )
 
+        if option is None:
+            collection_index, option = next(
+                (i, o) for i, o in enumerate(options)
+                if o.uri == 'https://rdmorganiser.github.io/terms/options/software_identifier/other'
+            )
+
         return collection_index, option
 
     def get_cff_identifiers(self, cff_data):
@@ -918,7 +932,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         pid_values = []
         for identifier in _identifiers:
             value = identifier.get('value')
-            if value is None:
+            if value is None or value == '':
                 continue
 
             identifier_type = identifier.get('type')
@@ -934,6 +948,245 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     text=value,
                     option=identifier_option
                 ))
+
+        return pid_values
+    
+    def get_title(self, metadata_dict, key):
+        dict_value = metadata_dict.get(key)
+        v_attribute = self.check_attribute(self.metadata_attr_mapping.get('title'))
+
+        title_value = None
+        if dict_value and v_attribute:
+            title_value = self.create_value(v_attribute, text=dict_value)
+
+        return title_value
+    
+    def get_codemeta_licenses(self, codemeta_data):
+        codemeta_licenses = codemeta_data.get('license')
+
+        license_values = []
+        if codemeta_licenses is None:
+            return license_values
+
+        if isinstance(codemeta_licenses, str):
+            codemeta_licenses = [codemeta_licenses]
+
+        for spdx_url in codemeta_licenses:
+            _id = spdx_url.removeprefix('https://spdx.org/licenses/')
+            license_value = self.get_license_value(_id)
+            if license_value:
+                license_values.append(license_value)
+
+        return license_values
+    
+    def get_codemeta_authors(self, codemeta_data):
+        raw_codemeta_authors = []
+        for key in ['author', 'contributor', 'maintainer']:
+            if key in codemeta_data:
+                raw_author = codemeta_data.get(key)
+                if isinstance(raw_author, list):
+                    raw_codemeta_authors.extend(raw_author)
+                elif isinstance(raw_author, dict):
+                    raw_codemeta_authors.append(raw_author)
+
+        codemeta_authors = []
+        codemeta_roles = []     
+        for author in raw_codemeta_authors:
+            raw_type = (
+                author.get('@type') if '@type' in author 
+                else(author.get('type') if 'type' in author else None)
+            )
+            
+            type = (
+                'person' if raw_type == 'Person'
+                else('entity' if raw_type == 'Organization' else raw_type)
+            )
+
+            if type == 'Role':
+                codemeta_roles.append(author)
+
+            if type != 'person' and type != 'entity':
+                continue
+
+            author['type'] = type
+            codemeta_authors.append(author)
+
+        contributor_values = []
+        for i, author in enumerate(codemeta_authors):
+            type = author.pop('type')
+
+            set_v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('id'))
+            if set_v_attribute is None:
+                continue
+
+            # SET VALUE
+            set_label = (
+                f'{author.get("givenName", "")} {author.get("familyName", "")}'.strip()
+                if type == 'person'
+                else author.get('name')
+            )
+            set_label = set_label if (set_label and set_label != '') else f'cff author # {i+1}'
+            contributor_values.append(self.create_value(
+                set_v_attribute,
+                set_collection=True,
+                set_index=i,
+                text=set_label
+            ))
+
+            # TYPE VALUE
+            type_v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('type'))
+            option_uri = (
+                    'https://rdmo.mpdl.mpg.de/terms/options/partner-types/person'
+                    if type == 'person'
+                    else 'https://rdmo.mpdl.mpg.de/terms/options/partner-types/entity'
+                )
+            type_v_option = self.get_option(option_uri)
+            if type_v_attribute and type_v_option:
+                contributor_values.append(self.create_value(
+                    type_v_attribute,
+                    set_collection=True,
+                    set_index=i,
+                    option=type_v_option
+                ))
+
+            for k, v in author.items():
+                if v is None or v == '':
+                    continue
+
+                # no SMP field for name for a contributor of type person
+                if (k == 'name' and type == 'person'):
+                    continue
+
+                v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get(k))
+                if k in ['givenName', 'familyName', 'name'] and v_attribute:
+                    contributor_values.append(self.create_value(
+                        v_attribute,
+                        set_collection=True,
+                        set_index=i,
+                        text=v
+                    ))
+
+                v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('orcid'))
+                if (k == 'id' or k == '@id') and author.get(k).startswith('https://orcid.org/') and v_attribute:
+                    contributor_values.append(self.create_value(
+                        v_attribute,
+                        set_collection=True,
+                        set_index=i,
+                        text=author.get(k)
+                    ))
+
+                if k == 'affiliation':
+                    affiliations = []
+                    if isinstance(v, list):
+                        affiliations.extend(v)
+                    elif isinstance(v, dict):
+                        affiliations.append(v)
+
+                    for j, a in enumerate(affiliations):
+                        affiliation_name = a.get('name')
+                        affiliation_id = (
+                            a.get('id') if 'id' in a
+                            else (a.get('@id') if '@id' in a else None)
+                        )
+
+                        v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('affiliation'))
+                        if affiliation_name and v_attribute:
+                            contributor_values.append(self.create_value(
+                                v_attribute,
+                                set_collection=True,
+                                set_prefix=str(i), # set_prefix is a string field
+                                set_index=j,
+                                text=affiliation_name
+                            ))
+
+                        v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('ror-id'))
+                        if affiliation_id and affiliation_id.startswith('https://ror.org/') and v_attribute:
+                            contributor_values.append(self.create_value(
+                                v_attribute,
+                                set_collection=True,
+                                set_prefix=str(i), # set_prefix is a string field
+                                set_index=j,
+                                text=affiliation_id
+                            ))
+
+
+        for i, role in enumerate(codemeta_roles):
+            author_id = (
+                role.get('author') if 'author' in role
+                else (
+                    role.get('contributor') if 'contributor' in role 
+                    else (role.get('maintainer') if 'maintainer' in role else None)
+                )
+            )
+
+            if author_id:
+                author_index = next(
+                    (
+                        v.set_index for v in contributor_values 
+                        if (
+                            v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('orcid') and
+                            v.text == author_id
+                        )
+                    ),
+                    None
+                )
+
+                role_name = role.get('roleName')
+                if author_index and role_name:
+                    author_affiliation_indizes = [
+                        a.set_index for a in [v for v in contributor_values if v.set_prefix == str(author_index)]
+                    ]
+                    role_index = (
+                        i + 1 + max(author_affiliation_indizes)
+                        if len(author_affiliation_indizes) > 0
+                        else i
+                    ) 
+                    v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('role'))
+                    contributor_values.append(self.create_value(
+                        v_attribute,
+                        set_collection=True,
+                        set_prefix=str(author_index), # set_prefix is a string field
+                        set_index=role_index,
+                        text=role_name
+                    ))
+
+        return contributor_values
+    
+    def get_codemeta_identifiers(self, codemeta_data):
+        identifiers = []
+        codemeta_identifiers = codemeta_data.get('identifier')
+        if isinstance(codemeta_identifiers, list):
+            identifiers.extend(codemeta_identifiers)
+        elif isinstance(codemeta_identifiers, dict):
+            identifiers.append(codemeta_identifiers)
+
+        pid_values = []
+        for identifier in identifiers:
+            value = identifier.get('value')
+            if value is None or value == '':
+                continue
+
+            identifier_type = (
+                identifier.get('propertyID') if 'propertyID' in identifier
+                else (identifier.get('name') if 'name' in identifier else None)
+            )
+            if identifier_type:
+                identifier_type = (
+                    'swh' if identifier_type.lower()  == 'software heritage identifier'
+                    else identifier_type.lower()
+                )
+                collection_index, identifier_option = self.get_pid_option(
+                    'https://rdmorganiser.github.io/terms/options/software_identifier',
+                    identifier_type
+                )
+                v_attribute = self.check_attribute(self.metadata_attr_mapping.get('pid'))
+                if identifier_option and v_attribute:
+                    pid_values.append(self.create_value(
+                        v_attribute,
+                        collection_index=collection_index,
+                        text=value,
+                        option=identifier_option
+                    ))
 
         return pid_values
 
@@ -1010,7 +1263,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         cff_data = yaml.safe_load(citation_content) if citation_content else {}
 
         if 'title' in cff_data:
-            title_value = self.get_cff_title(cff_data)
+            title_value = self.get_title(cff_data, 'title')
             if title_value:
                 import_values = self.merge_title([title_value], import_values)
 
@@ -1028,6 +1281,56 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         found_new_pids = False
         if 'identifiers' in cff_data or 'doi' in cff_data or 'url' in cff_data:
             pid_values = self.get_cff_identifiers(cff_data)
+            if len(pid_values) > 0:
+                import_values, found_new_pids = self.merge_pids(pid_values, import_values)
+
+        application_class_v_attribute = self.check_attribute('https://rdmorganiser.github.io/terms/domain/smp/application-class')
+        application_class_option_uri = (
+                'https://rdmorganiser.github.io/terms/options/application-class/2'
+                if found_new_contributors
+                else 'https://rdmorganiser.github.io/terms/options/application-class/1'
+            )
+        application_class_option = self.get_option(application_class_option_uri)
+
+        if (
+            (found_new_contributors or found_new_pids) and
+            application_class_v_attribute and
+            application_class_option
+        ):
+            application_class_value = self.create_value(
+                application_class_v_attribute,
+                option = application_class_option
+            )
+            import_values = self.merge_application_class([application_class_value], import_values)
+
+        return import_values
+    
+    def process_codemeta(self, url, import_values, headers, get_codemeta):
+        # https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md
+
+        codemeta_content = get_codemeta(url, headers)
+        codemeta_data = json.loads(codemeta_content)
+        
+
+        if 'name' in codemeta_data:
+            title_value = self.get_title(codemeta_data, 'name')
+            if title_value:
+                import_values = self.merge_title([title_value], import_values)
+
+        if 'license' in codemeta_data:
+            license_values = self.get_codemeta_licenses(codemeta_data)
+            if len(license_values) > 0:
+                import_values = self.merge_licenses(license_values, import_values)
+
+        found_new_contributors = False
+        if 'author' in codemeta_data or 'contributor' in codemeta_data or 'maintainer' in codemeta_data:
+            contributor_values = self.get_codemeta_authors(codemeta_data)
+            if len(contributor_values) > 0:
+                import_values, found_new_contributors = self.merge_contributors(contributor_values, import_values)
+
+        found_new_pids = False
+        if 'identifier' in codemeta_data:
+            pid_values = self.get_codemeta_identifiers(codemeta_data)
             if len(pid_values) > 0:
                 import_values, found_new_pids = self.merge_pids(pid_values, import_values)
 
