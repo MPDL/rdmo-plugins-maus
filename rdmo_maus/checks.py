@@ -8,11 +8,11 @@ def check_export_format_settings(app_configs, **kwargs):
 
     export_formats = settings.EXPORT_FORMATS
     try:
-        plain_format = next(format for format in export_formats if format[0] == 'plain')
+        next(format for format in export_formats if format[0] == 'plain')
     except StopIteration:
         errors.append(
             Error(
-                'settings.EXPORT_FORMATS does not contain format "plain".', 
+                'settings.EXPORT_FORMATS does not contain format "plain".',
                 hint='Add `("plain", _("Plain Text"))` to EXPORT_FORMATS in config/settings/local.py'
             )
         )
