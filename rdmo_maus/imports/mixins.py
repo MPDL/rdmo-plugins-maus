@@ -308,7 +308,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         index_to_update = []
         for i, v in enumerate(unique_new_language_values):
             language = v.text.lower()
-            if i in matching_languages.keys():
+            if i in matching_languages:
                 new_values.append(matching_languages.get(i))
                 continue
 
@@ -323,7 +323,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         if len(index_to_update) > 0:
             usable_matching_language_indizes = [
-                i for i in matching_languages.keys()
+                i for i in matching_languages
                 if i not in [j for (j, o) in project_languages]
             ]
             new_values_language_indizes = [v.collection_index for v in new_values]
@@ -587,7 +587,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             if contributor_orcid in import_values_orcids:
                 continue
 
-            if int(import_index) in matching_contributors.keys():
+            if int(import_index) in matching_contributors:
                 new_values.extend(matching_contributors.get(int(import_index)))
                 continue
 
@@ -609,7 +609,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         if len(index_to_update) > 0:
             remaining_matching_contributor_indizes = [
-                i for i in matching_contributors.keys()
+                i for i in matching_contributors
                 if i not in project_contributor_indizes
             ]
             new_values_contributor_indizes = [
@@ -659,7 +659,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     new_values.append(v)
 
         import_values.extend(new_values)
-        merged_new_contributors = True if len(new_values) > 0 else False
+        merged_new_contributors = len(new_values) > 0
 
         return import_values, merged_new_contributors
 
@@ -687,7 +687,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         ]
 
         import_values.extend(new_values)
-        merged_new_pids = True if len(new_values) > 0 else False
+        merged_new_pids = len(new_values) > 0
 
         return import_values, merged_new_pids
 
@@ -1236,7 +1236,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         for uri, xml_values_list in grouped_xml_values.items():
             if (
-                uri not in grouped_import_values.keys() and
+                uri not in grouped_import_values and
                 # imported xml contributors and languages must always be merged:
                 # they may have different order than matching project values
                 uri != 'contributor' and

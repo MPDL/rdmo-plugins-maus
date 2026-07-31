@@ -201,7 +201,7 @@ class SMPExportMixin:
             for k in ['choice_validators', 'choice_attributes']:
                 license_values = {
                     key:self.smp_exports_map.get('licenses', {}).get('exports', {}).get(f'export_{k}')
-                    for key in license_export_choices.keys()
+                    for key in license_export_choices
                 }
                 smp_export_choices.get(k, {}).update(license_values)
 

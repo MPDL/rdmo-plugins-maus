@@ -27,7 +27,7 @@ def groupby_values(initial, v, groupby):
         'set_prefix': v.set_prefix
     }
     _groupby = str(groupby_mapping[groupby])
-    if _groupby not in initial.keys():
+    if _groupby not in initial:
         initial[_groupby] = [v]
     else:
         initial[_groupby].append(v)

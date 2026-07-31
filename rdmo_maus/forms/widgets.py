@@ -294,7 +294,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         )
         if key != 'select_all_choice':
             for k, v in self.default_choice_attributes.items():
-                if k in extra_option_attrs.keys():
+                if k in extra_option_attrs:
                     extra_option_attrs[k].update(v)
                 else:
                     extra_option_attrs[k] = v
@@ -328,8 +328,8 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         option_context = widget.get_context(
             name, value, checkbox_label, text_label, option_attrs, extra_option_attrs
         )
-        option_errors = self.errors[key] if key in self.errors.keys() else None
-        option_warnings = self.choice_warnings[key] if key in self.choice_warnings.keys() else None
+        option_errors = self.errors.get(key, None)
+        option_warnings = self.choice_warnings.get(key, None)
 
         return {
             'name': name,
