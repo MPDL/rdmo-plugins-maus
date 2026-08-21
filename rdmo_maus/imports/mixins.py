@@ -591,7 +591,11 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 new_values.extend(matching_contributors.get(int(import_index)))
                 continue
 
-            index = i + len(import_values_contributor_indizes)
+            index = (
+                i + max(import_values_contributor_indizes) 
+                if len(import_values_contributor_indizes) > 0
+                else i
+            )
             if index in project_contributor_indizes:
                 index_to_update.append(contributor_values_list)
                 continue
@@ -608,10 +612,6 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 new_values.append(v)
 
         if len(index_to_update) > 0:
-            remaining_matching_contributor_indizes = [
-                i for i in matching_contributors
-                if i not in project_contributor_indizes
-            ]
             new_values_contributor_indizes = [
                 v.set_index for v in new_values
                 if v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('id')
@@ -640,7 +640,6 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             )
 
             available_indizes = [
-                *remaining_matching_contributor_indizes,
                 *list(range(starting_index, (starting_index + len(index_to_update))))
             ]
             available_indizes = list(set(available_indizes))
@@ -836,7 +835,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
             # SET VALUE
             set_label = (
-                f'{author.get("given-names", "")} {author.get("family-names", "")}'.strip()
+                f'{author.get("given-names", "")} {author.get("family-names", "")}'.replace('None', '').strip()
                 if type == 'person'
                 else author.get('name')
             )
@@ -1021,10 +1020,11 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
             # SET VALUE
             set_label = (
-                f'{author.get("givenName", "")} {author.get("familyName", "")}'.strip()
+                f'{author.get("givenName", "")} {author.get("familyName", "")}'.replace('None', '').strip()
                 if type == 'person'
                 else author.get('name')
             )
+            
             set_label = set_label if (set_label and set_label != '') else f'cff author # {i+1}'
             contributor_values.append(self.create_value(
                 set_v_attribute,
