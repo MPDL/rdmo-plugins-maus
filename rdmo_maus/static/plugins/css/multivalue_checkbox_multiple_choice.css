@@ -1,4 +1,4 @@
-.selected {
+.droppable {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -12,8 +12,13 @@
 .choice-block {
   width: 100%;
 }
+
+.custom-checkbox {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
   
-.selected .checkbox {
+.droppable .checkbox {
   width: 100%;
   align-items: center;
   display: flex;
@@ -28,7 +33,7 @@
   border-radius: 4px;
 }
 
-.selected .checkbox .drag-icon {
+.droppable .checkbox .drag-icon {
   cursor: move;
 }
 
@@ -42,11 +47,14 @@
   flex-grow: 1; 
   display: flex; 
   gap: 1rem;
+  min-height: 40px;
+  align-items: center;
 }
 
 .multivalue-checkbox-text {
   width: 60%; 
-  align-items: center; 
+  align-items: center;
+  white-space: nowrap;
   gap: 1rem;
 }
 
@@ -80,11 +88,11 @@
     width: 100%;
   }
 
-  .selected .multivalue-checkbox {
+  .droppable .multivalue-checkbox {
     padding-left: 0;
   }
 
-  .selected .checkbox input[type="checkbox"] {
+  .droppable .checkbox input[type="checkbox"] {
     margin-left: 0;
     position: static;
   }

@@ -1,21 +1,5 @@
 const draggables = document.querySelectorAll('.drag-icon')
-const droppable = document.querySelector('.selected')
-const defaultZone = document.querySelector('.unselected')
-
-function moveChoice(droppable, fieldId, index, selected) {
-  const choiceBlock = document.getElementById(`${fieldId}_choice_block_${index}`)
-  let dragIcon = document.getElementById(`${fieldId}_drag_icon_${index}`)
-  
-  if (selected == true) {
-    droppable.appendChild(choiceBlock)
-    dragIcon.draggable = true
-    dragIcon.style.display = 'flex'
-  } else {
-    defaultZone.appendChild(choiceBlock)
-    dragIcon.draggable = false
-    dragIcon.style.display = 'none'
-  }
-}
+const droppable = document.querySelector('.droppable')
 
 function toggleAllChoices(selectAllCheckbox) {
   const selectAllCheckboxId = selectAllCheckbox.id
@@ -41,16 +25,31 @@ function toggleAllChoices(selectAllCheckbox) {
     if (errorMessages) {
       errorMessages.style.display = selectAllCheckbox.checked ? 'block' : 'none'
     }
-
-    if (droppable) {
-      moveChoice(droppable, fieldId, i, selectAllCheckbox.checked)
-    }
   })
 }
 
 function toggleChoiceAttributesVisibility(checkbox) {
   const fieldId = `${checkbox.id.split('_')[0]}_${checkbox.id.split('_')[1]}`
   const index = checkbox.id.split('_').findLast((e) => e)
+
+  let selectAllCheckbox = document.getElementById(`${fieldId}_checkbox_select_all_choice`)
+  if (selectAllCheckbox) {
+    // if at least one choice is dropped, then selectAllCheckbox must turn false
+    if (!checkbox.checked) {
+      selectAllCheckbox.checked = false
+    }
+    
+    // if all choices are selected, then selectAllCheckbox must turn true
+    // match all checkboxes of the field, excluding selectAllCheckbox itself and text inputs
+    let allChoices = document.querySelectorAll(  
+      `[id^="${fieldId}_checkbox"]:not([id="${fieldId}_checkbox_select_all_choice"],[id^="${fieldId}_text"])`
+    )
+    let allChoicesChecked = [...allChoices].map(choice => choice.checked).every(value => value === true)
+    if (allChoicesChecked) {
+      selectAllCheckbox.checked = true
+    }
+
+  }
 
   let filePath = document.getElementById(`${fieldId}_file_path_${index}`)
   if (filePath) {
@@ -67,8 +66,9 @@ function toggleChoiceAttributesVisibility(checkbox) {
     errorMessages.style.display = checkbox.checked ? 'block' : 'none'
   }
 
-  if (droppable) {
-    moveChoice(droppable, fieldId, index, checkbox.checked)
+  if (droppable && !checkbox.checked) {
+    const choiceBlock = document.getElementById(`${fieldId}_choice_block_${index}`)    
+    droppable.appendChild(choiceBlock)
   }
 }
 

@@ -1,24 +1,13 @@
 {% with field_id=widget.attrs.id %}
+    {% if widget.select_all_option %}
+        {% include widget.select_all_option.template_name with widget=widget.select_all_option index=widget.select_all_option.index %}
+    {% endif %}
     {% if widget.sortable %}
-        {% if widget.select_all_option %}
-            {% include widget.select_all_option.template_name with widget=widget.select_all_option index=widget.select_all_option.index %}
-        {% endif %}
-        <div id="selected_{{ field_id }}" class="selected" >
+        <div id="selected_{{ field_id }}" class="droppable" >
             {% for option in widget.optgroups %}
-                {% if option.selected %}
-                    <div class="choice-block" id="{{ field_id }}_choice_block_{{ option.index }}" >
-                        {% include option.template_name with widget=option index=option.index field_id=field_id sortable=widget.sortable %}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div id="unselected_{{ field_id }}" class="unselected" >
-            {% for option in widget.optgroups %}
-                {% if not option.selected %}
-                    <div class="choice-block" id="{{ field_id }}_choice_block_{{ option.index }}" >
-                        {% include option.template_name with widget=option index=option.index field_id=field_id sortable=widget.sortable %}
-                    </div>
-                {% endif %}
+                <div class="choice-block" id="{{ field_id }}_choice_block_{{ option.index }}" >
+                    {% include option.template_name with widget=option index=option.index field_id=field_id sortable=widget.sortable %}
+                </div>
             {% endfor %}
         </div>
     {% else %}
