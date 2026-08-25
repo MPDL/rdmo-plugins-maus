@@ -43,7 +43,7 @@ class SMPExportMixin:
         smp_exports_map = {
             'readme': {
                 'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'export_choice': ('False,README.md', ('README', _('File path')), 'readme'),
+                    'export_choice': ('True,README.md', ('README', _('File path')), 'readme'),
                     'export_choice_validators': {
                         'text': [validate_file_path, FilePathExtensionValidator('.md')]
                     },
@@ -63,7 +63,7 @@ class SMPExportMixin:
             },
             'citation': {
                 'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'export_choice': ('False,CITATION.cff', ('CITATION', _('File path')), 'citation'),
+                    'export_choice': ('True,CITATION.cff', ('CITATION', _('File path')), 'citation'),
                     'export_choice_validators': {
                         'text': [validate_file_path, FilePathExtensionValidator('.cff')]
                     },
@@ -83,7 +83,7 @@ class SMPExportMixin:
             },
             'codemeta': {
                 'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'export_choice': ('False,codemeta.json', ('CodeMeta', _('File path')), 'codemeta'),
+                    'export_choice': ('True,codemeta.json', ('CodeMeta', _('File path')), 'codemeta'),
                     'export_choice_validators': {
                         'text': [validate_file_path, FilePathExtensionValidator('.json')]
                     },
@@ -118,7 +118,7 @@ class SMPExportMixin:
             },
             'report': {
                 'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'export_choice': ('False,data/smp_report.html', (_('SMP Report'), _('File path')), 'report'),
+                    'export_choice': ('True,data/smp_report.html', (_('SMP Report'), _('File path')), 'report'),
                     'export_choice_validators': {
                         'text': [validate_file_path, FilePathExtensionValidator('.html')]
                     },
@@ -141,7 +141,7 @@ class SMPExportMixin:
         if pdf_export_format:
             smp_exports_map['report'] = {
                 'exports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'export_choice': ('False,data/smp_report.pdf', (_('SMP Report'), _('File path')), 'report'),
+                    'export_choice': ('True,data/smp_report.pdf', (_('SMP Report'), _('File path')), 'report'),
                     'export_choice_validators': {
                         'text': [validate_file_path, FilePathExtensionValidator('.pdf')]
                     },
@@ -186,12 +186,12 @@ class SMPExportMixin:
             license_count = len(license_ids)
             if license_count == 1:
                 key = f'license_{license_ids[0].lower().replace("-", "_")}'
-                license_export_choices[key] = ('False,LICENSE', ('LICENSE', _('File path')), key)
+                license_export_choices[key] = ('True,LICENSE', ('LICENSE', _('File path')), key)
             elif license_count > 1:
                 for _id in license_ids:
                     key = f'license_{_id.lower().replace("-", "_")}'
                     license_export_choices[key] = (
-                        f'False,LICENSE_{_id.replace("-", "_")}',
+                        f'True,LICENSE_{_id.replace("-", "_")}',
                         (f'LICENSE_{_id.replace("-", "_")}', _('File path')),
                         key
                     )
