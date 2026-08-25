@@ -219,9 +219,8 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     def sort_choices(self, data, name):
         selected_choices = [k for k,v in data.items() if (k.startswith(name) and k.endswith('_checkbox') and 'on' in v)]
         sorted_choice_keys = [c.removeprefix(f'{name}_').removesuffix('_checkbox') for c in selected_choices]
-
         for k in self.choice_keys:
-            if k not in sorted_choice_keys:
+            if k not in sorted_choice_keys and k != 'select_all_choice':
                 sorted_choice_keys.append(k)
 
         sorted_choices = []
@@ -249,7 +248,6 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         self.errors = current_errors
 
         groups = []
-
         for index, (option_value, option_labels, option_key) in enumerate(self.choices):
             i = selected_option_keys.index(option_key) if option_key in selected_option_keys else None
             option_value = transformed_value[i] if i is not None else option_value
@@ -365,14 +363,11 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         context = super().get_context(name, value, attrs)
         context['widget']['sortable'] = self.sortable
 
-        if self.sortable and self.include_select_all_choice:
+        if self.include_select_all_choice:
             widget_optgroups = context['widget']['optgroups']
-            select_all_option = widget_optgroups[0]
-            widget_optgroups = widget_optgroups[1:]
-
-            context['widget']['select_all_option'] = select_all_option
-            context['widget']['optgroups'] = widget_optgroups
-
+            context['widget']['select_all_option'] = widget_optgroups[0]
+            context['widget']['optgroups'] = widget_optgroups[1:]
+        
         return context
 
 class MultivalueCheckboxWidget(forms.MultiWidget):
