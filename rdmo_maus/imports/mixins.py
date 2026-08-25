@@ -98,7 +98,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         smp_import_map = {
             'xml': {
                 'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'import_choice': ('False,data/smp.xml', ('RDMO XML', _('File path')), 'xml'),
+                    'import_choice': ('True,data/smp.xml', ('RDMO XML', _('File path')), 'xml'),
                     'import_choice_validators': {
                         'text': [FilePathExtensionValidator('.xml')]
                     },
@@ -113,7 +113,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             },
             'citation': {
                 'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'import_choice': ('False,CITATION.cff', ('CITATION', _('File path')), 'citation'),
+                    'import_choice': ('True,CITATION.cff', ('CITATION', _('File path')), 'citation'),
                     'import_choice_validators': {
                         'text': [FilePathExtensionValidator('.cff')]
                     },
@@ -128,7 +128,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             },
             'codemeta': {
                 'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'import_choice': ('False,codemeta.json', ('CodeMeta', _('File path')), 'codemeta'),
+                    'import_choice': ('True,codemeta.json', ('CodeMeta', _('File path')), 'codemeta'),
                     'import_choice_validators': {
                         'text': [FilePathExtensionValidator('.json')]
                     },
@@ -143,7 +143,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             },
             'license': {
                 'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'import_choice': ('False', 'LICENSE', 'license'),
+                    'import_choice': ('True', 'LICENSE', 'license'),
                     'import_choice_validators': {},
                     'import_choice_attributes': {}
                 },
@@ -152,7 +152,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             },
             'sbom': {
                 'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'import_choice': ('False', _('Repository dependency graph'), 'sbom'),
+                    'import_choice': ('True', _('Repository dependency graph'), 'sbom'),
                     'import_choice_validators': {},
                     'import_choice_attributes': {}
                 },
@@ -161,7 +161,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             },
             'languages': {
                 'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
-                    'import_choice': ('False', _('Repository languages'), 'languages'),
+                    'import_choice': ('True', _('Repository languages'), 'languages'),
                     'import_choice_validators': {},
                     'import_choice_attributes': {}
                 },
