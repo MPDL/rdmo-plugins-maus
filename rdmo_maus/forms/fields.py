@@ -127,7 +127,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
 
     '''
 
-    select_all_choice = ('False', _('Select all'), 'select_all_choice')
+    select_all_choice = ('True', _('Select all'), 'select_all_choice')
     _choice_fields = {}
     _choice_keys = []
 
