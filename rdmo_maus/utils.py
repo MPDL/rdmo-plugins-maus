@@ -24,7 +24,7 @@ def groupby_values(initial, v, groupby):
         'option': v.option.uri if v.option else None,
         'text': v.text.lower(),
         'set_index': v.set_index,
-        'set_prefix': v.set_prefix
+        'set_prefix': v.set_prefix,
     }
     _groupby = str(groupby_mapping[groupby])
     if _groupby not in initial:
@@ -33,17 +33,17 @@ def groupby_values(initial, v, groupby):
         initial[_groupby].append(v)
     return initial
 
+
 def get_optionset_options(optionset_uri):
-        try:
-            options = OptionSet.objects.get(uri=optionset_uri).elements
-            return options
-        except KeyError:
-            return []
+    try:
+        options = OptionSet.objects.get(uri=optionset_uri).elements
+        return options
+    except KeyError:
+        return []
+
 
 def get_questionsets(catalog):
-    queryset = QuestionSet.objects.filter_by_catalog(catalog) \
-                            .select_related('attribute') \
-                            .order_by('attribute__uri')
+    queryset = QuestionSet.objects.filter_by_catalog(catalog).select_related('attribute').order_by('attribute__uri')
 
     questionsets = {}
     for questionset in queryset:
@@ -51,10 +51,9 @@ def get_questionsets(catalog):
             questionsets[questionset.attribute.uri] = questionset
     return questionsets
 
+
 def get_pages(catalog):
-    queryset = Page.objects.filter_by_catalog(catalog) \
-                            .select_related('attribute') \
-                            .order_by('attribute__uri')
+    queryset = Page.objects.filter_by_catalog(catalog).select_related('attribute').order_by('attribute__uri')
 
     pages = {}
     for page in queryset:
@@ -62,11 +61,12 @@ def get_pages(catalog):
             pages[page.attribute.uri] = page
     return pages
 
+
 def zip(content_files):
     zip_buffer = BytesIO()
     with zipfile.ZipFile(
         file=zip_buffer,
-        mode="w",
+        mode='w',
         compression=zipfile.ZIP_DEFLATED,
         compresslevel=9,
     ) as zip_archive:
@@ -77,6 +77,7 @@ def zip(content_files):
 
     return zip_buffer
 
+
 def unzip(zip_buffer):
     content_files = {}
     with zipfile.ZipFile(zip_buffer) as zip:
@@ -86,6 +87,7 @@ def unzip(zip_buffer):
                 content_files[name] = content
 
     return content_files
+
 
 def get_licenses(spdx_ids):
     # https://github.com/spdx/license-list-data
@@ -104,61 +106,56 @@ def get_licenses(spdx_ids):
 
     return license_contents
 
+
 def get_project_license_ids(project, snapshot=None):
     attribute = Attribute.objects.get(uri='https://rdmorganiser.github.io/terms/domain/smp/software-license')
-    spdx_ids = [
-        license.value
-        for license in project.values.filter(snapshot=snapshot, attribute=attribute)
-    ]
-    spdx_ids = [
-        id.removeprefix('Other Software License: ').removeprefix('Andere Software-Lizenz: ')
-        for id in spdx_ids
-    ]
+    spdx_ids = [license.value for license in project.values.filter(snapshot=snapshot, attribute=attribute)]
+    spdx_ids = [id.removeprefix('Other Software License: ').removeprefix('Andere Software-Lizenz: ') for id in spdx_ids]
     return spdx_ids
 
+
 def render_to_license(request, project, snapshot=None, choice=None):
-        spdx_ids = get_project_license_ids(project, snapshot)
+    spdx_ids = get_project_license_ids(project, snapshot)
 
-        if len(spdx_ids) == 0: # no license(s) selected yet
-            return render(request, 'core/error.html', {
-                'title': _('Something went wrong'),
-                'errors': [_('No license(s) selected yet for this project.')]
-            }, status=200)
-
-        if choice is not None:
-            spdx_id = next(
-                (
-                    license_id for license_id in spdx_ids
-                    if license_id.lower().replace('-', '_') == choice
-                ),
-                choice
-            )
-            spdx_ids = [spdx_id]
-
-        license_contents = get_licenses(spdx_ids)
-        if len(license_contents) == 1:
-            content = next(iter(license_contents.values()))
-            content_type = 'text/plain'
-            file_name = 'LICENSE'
-            content_disposition = f'attachment; filename="{file_name}"'
-
-        elif len(license_contents) > 1:
-            content = zip(license_contents)
-            content_type = 'application/zip'
-            file_name = 'licenses.zip'
-            content_disposition = f'attachment; filename="{file_name}"'
-
-        else:
-            return None
-
-        response = HttpResponse(
-            content,
-            headers={
-                "Content-Type": content_type,
-                "Content-Disposition": content_disposition,
-            },
+    if len(spdx_ids) == 0:  # no license(s) selected yet
+        return render(
+            request,
+            'core/error.html',
+            {'title': _('Something went wrong'), 'errors': [_('No license(s) selected yet for this project.')]},
+            status=200,
         )
-        return response
+
+    if choice is not None:
+        spdx_id = next(
+            (license_id for license_id in spdx_ids if license_id.lower().replace('-', '_') == choice), choice
+        )
+        spdx_ids = [spdx_id]
+
+    license_contents = get_licenses(spdx_ids)
+    if len(license_contents) == 1:
+        content = next(iter(license_contents.values()))
+        content_type = 'text/plain'
+        file_name = 'LICENSE'
+        content_disposition = f'attachment; filename="{file_name}"'
+
+    elif len(license_contents) > 1:
+        content = zip(license_contents)
+        content_type = 'application/zip'
+        file_name = 'licenses.zip'
+        content_disposition = f'attachment; filename="{file_name}"'
+
+    else:
+        return None
+
+    response = HttpResponse(
+        content,
+        headers={
+            'Content-Type': content_type,
+            'Content-Disposition': content_disposition,
+        },
+    )
+    return response
+
 
 def render_from_view(request, project, snapshot, view_uri, title, export_format, language_code=None):
     language = language_code if language_code is not None else get_language()
@@ -170,13 +167,17 @@ def render_from_view(request, project, snapshot, view_uri, title, export_format,
             return None
 
         response = render_to_format(
-            None, export_format, title, 'projects/project_view_export.html', {
-            'format': export_format,
-            'title': title,
-            'view': view,
-            'rendered_view': rendered_view,
-            'resource_path': get_value_path(project, snapshot)
-            }
+            None,
+            export_format,
+            title,
+            'projects/project_view_export.html',
+            {
+                'format': export_format,
+                'title': title,
+                'view': view,
+                'rendered_view': rendered_view,
+                'resource_path': get_value_path(project, snapshot),
+            },
         )
         response['Content-Disposition'] = f'attachment; filename="{title}"'
 

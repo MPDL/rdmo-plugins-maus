@@ -69,7 +69,7 @@ For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plug
                 sortable=True,
                 include_select_all_choice=True,
                 choices=[
-                    ('True,value-text-field', ('checkbox-label', 'text-label'), 'choice-1'), 
+                    ('True,value-text-field', ('checkbox-label', 'text-label'), 'choice-1'),
                     ('False', 'single-checkbox-label', 'choice-2')
                 ]
             )
@@ -85,4 +85,3 @@ For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plug
 
         </head>
         ```
-

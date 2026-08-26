@@ -2,10 +2,10 @@
 
 <div class="checkbox custom-checkbox" >
     {% if sortable %}
-        <div 
-            class="drag-icon fa fa-arrows drag" 
+        <div
+            class="drag-icon fa fa-arrows drag"
             id="{{ field_id }}_drag_icon_{{ index }}"
-            style="display: {% if widget.selected %}flex{% else %}none{% endif %};" 
+            style="display: {% if widget.selected %}flex{% else %}none{% endif %};"
             {% if widget.selected %}draggable="true"{% endif %}
         ></div>
     {% endif %}
@@ -16,13 +16,13 @@
                 {{ checkbox.label }}
             </span>
             {% if text %}
-                <span 
-                    id="{{ field_id }}_file_path_{{ index }}" 
+                <span
+                    id="{{ field_id }}_file_path_{{ index }}"
                     class="multivalue-checkbox-text"
-                    style="display: {% if widget.selected %}flex{% else %}none{% endif %};" 
+                    style="display: {% if widget.selected %}flex{% else %}none{% endif %};"
                 >
                     {{ text.label }}
-                    {% include "django/forms/widgets/input.html" with widget=text %}  
+                    {% include "django/forms/widgets/input.html" with widget=text %}
                 </span>
             {% endif %}
         {% endwith %}

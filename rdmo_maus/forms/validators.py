@@ -17,34 +17,34 @@ def validate_text_field(field_name, value, min_length, max_length, not_allowed_p
         except ValueError:
             pass
 
-        errors.append(ValidationError(
-            _('{fn} contains special character(s): "{sc}". Allowed characters are: {acns}.').format(
-                fn=field_name,
-                sc='", "'.join(matches),
-                acns=allowed_char_name_str
-            ),
-            code='invalid'
-        ))
+        errors.append(
+            ValidationError(
+                _('{fn} contains special character(s): "{sc}". Allowed characters are: {acns}.').format(
+                    fn=field_name, sc='", "'.join(matches), acns=allowed_char_name_str
+                ),
+                code='invalid',
+            )
+        )
 
     if len(value) > max_length:
-        errors.append(ValidationError(
-            _('{field_name} must have at most {max_length} characters (it has {len_value}).').format(
-                field_name=field_name,
-                max_length=max_length,
-                len_value=len(value)
-            ),
-            code='invalid'
-        ))
+        errors.append(
+            ValidationError(
+                _('{field_name} must have at most {max_length} characters (it has {len_value}).').format(
+                    field_name=field_name, max_length=max_length, len_value=len(value)
+                ),
+                code='invalid',
+            )
+        )
 
     if len(value) < min_length:
-        errors.append(ValidationError(
-            _('{field_name} must have at least {min_length} characters (it has {len_value}).').format(
-                field_name=field_name,
-                min_length=min_length,
-                len_value=len(value)
-            ),
-            code='invalid'
-        ))
+        errors.append(
+            ValidationError(
+                _('{field_name} must have at least {min_length} characters (it has {len_value}).').format(
+                    field_name=field_name, min_length=min_length, len_value=len(value)
+                ),
+                code='invalid',
+            )
+        )
 
     if len(errors) > 0:
         raise ValidationError(errors)
@@ -62,7 +62,6 @@ def validate_file_path(value):
 
 @deconstructible
 class FilePathExtensionValidator:
-
     def __init__(self, valid_extension: str):
         self.valid_extension = valid_extension
 
@@ -70,5 +69,5 @@ class FilePathExtensionValidator:
         if not value.endswith(self.valid_extension):
             raise ValidationError(
                 _('File must be in {valid_extension} format.').format(valid_extension=self.valid_extension),
-                code='invalid'
+                code='invalid',
             )

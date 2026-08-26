@@ -6,7 +6,7 @@ from .widgets import MultivalueCheckboxMultipleChoiceWidget, MultivalueCheckboxW
 
 
 class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
-    '''
+    """
     A multiple choice field with multivalue checkboxes as choices.
 
     ###########
@@ -125,14 +125,14 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
         'choice_3': ['Single warning for choice_3']
     }
 
-    '''
+    """
 
     select_all_choice = ('True', _('Select all'), 'select_all_choice')
     _choice_fields = {}
     _choice_keys = []
 
     def __init__(self, *, include_select_all_choice=False, sortable=False, choice_validators=None, **kwargs):
-        '''
+        """
         MultivalueCheckboxMultipleChoiceField.__init__
 
         :param list[tuple[str, tuple[str] | str, str]] choices: List of choices. Each choice is a tuple of
@@ -144,14 +144,13 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
             choice-specific validators for checkbox and/or text choice subfields.
             Check out the class docstring for details.
         :param kwargs: rest of keyword arguments of django's MultipleChoiceField
-        '''
+        """
 
         self.include_select_all_choice = include_select_all_choice
-        self.choice_validators=choice_validators if isinstance(choice_validators, dict) else {}
+        self.choice_validators = choice_validators if isinstance(choice_validators, dict) else {}
 
         self.widget = MultivalueCheckboxMultipleChoiceWidget(
-            sortable=sortable,
-            include_select_all_choice=include_select_all_choice
+            sortable=sortable, include_select_all_choice=include_select_all_choice
         )
 
         super().__init__(**kwargs)
@@ -200,9 +199,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
         if not value:
             return []
         elif not isinstance(value, (list, tuple)):
-            raise ValidationError(
-                self.error_messages["invalid_list"], code="invalid_list"
-            )
+            raise ValidationError(self.error_messages['invalid_list'], code='invalid_list')
 
         value = [str(multival) for multival in value]
 
@@ -233,14 +230,14 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
 
         value_lst = value.split(',')
         value_key = value_lst[0]
-        for (_values, _labels, key) in self.choices:
+        for _values, _labels, key in self.choices:
             if value_key == key:
                 return True
 
         return False
 
     def clean(self, value):
-        '''Validate the given value and return its 'cleaned' value as an
+        """Validate the given value and return its 'cleaned' value as an
         appropriate Python object.
 
         Validation of this field implies also validation of each of its choices;
@@ -248,7 +245,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
         In the case of single invalid choices, ValidationError message for this field
         is an empty string because the error message is displayed below the
         corresponding choice(s).
-        '''
+        """
         value = self.to_python(value)
 
         if len(self.choice_validators) > 0:
@@ -263,9 +260,8 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
                 if text_validators and len(choice_field.fields) > 1:
                     choice_field.fields[1].validators = text_validators
 
-
         self.widget.errors = {}
-        if value in self.empty_values and self.required: # self.empty_values = (None, '', [], (), {})
+        if value in self.empty_values and self.required:  # self.empty_values = (None, '', [], (), {})
             raise ValidationError(_('At least one choice must be selected.'), code='required')
 
         # validate choice values, which consist of multivalues (boolean and string)
@@ -297,6 +293,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
 
         return value
 
+
 class MultivalueCheckboxField(forms.MultiValueField):
     widget = MultivalueCheckboxWidget
 
@@ -305,8 +302,9 @@ class MultivalueCheckboxField(forms.MultiValueField):
         self.simple_checkbox = simple_checkbox
 
         fields = (
-            (forms.BooleanField(),) if simple_checkbox else
-            (
+            (forms.BooleanField(),)
+            if simple_checkbox
+            else (
                 forms.BooleanField(),
                 forms.CharField(),
             )
@@ -339,13 +337,11 @@ class MultivalueCheckboxField(forms.MultiValueField):
             field_value = value[i]
 
             # only text field can be empty (checkbox is either True or False)
-            if field_value in self.empty_values: # self.empty_values = (None, '', [], (), {})
+            if field_value in self.empty_values:  # self.empty_values = (None, '', [], (), {})
                 choice_labels = self.choice[1]
                 field_label = choice_labels[i]
 
-                errors.append(
-                    ValidationError(_('A {fl} is required.').format(fl=field_label), code='required')
-                )
+                errors.append(ValidationError(_('A {fl} is required.').format(fl=field_label), code='required'))
 
             try:
                 clean_data.append(field.clean(field_value))
@@ -360,10 +356,10 @@ class MultivalueCheckboxField(forms.MultiValueField):
         return out, errors
 
     def compress(self, data_list):
-        '''Transform input data_list to a string with the correctly typed value for each subwidget:
-            - a boolean value for the checkbox
-            - (optionally) a string value for the text
-        '''
+        """Transform input data_list to a string with the correctly typed value for each subwidget:
+        - a boolean value for the checkbox
+        - (optionally) a string value for the text
+        """
 
         if isinstance(data_list, list):
             return ','.join(map(str, data_list))

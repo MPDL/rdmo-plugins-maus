@@ -5,12 +5,12 @@ function toggleAllChoices(selectAllCheckbox) {
   const selectAllCheckboxId = selectAllCheckbox.id
   const fieldId = selectAllCheckboxId.replace('_checkbox_select_all_choice', '')
   // match all checkboxes of the field, excluding selectAllCheckbox itself and text inputs
-  const allChoices = document.querySelectorAll(  
+  const allChoices = document.querySelectorAll(
     `[id^="${fieldId}_checkbox"]:not([id="${selectAllCheckboxId}"],[id^="${fieldId}_text"])`
   )
   allChoices.forEach((choice, i) => {
     choice.checked = selectAllCheckbox.checked
-    
+
     let filePath = document.getElementById(`${fieldId}_file_path_${i}`)
     if (filePath) {
       filePath.style.display = selectAllCheckbox.checked ? 'flex' : 'none'
@@ -38,10 +38,10 @@ function toggleChoiceAttributesVisibility(checkbox) {
     if (!checkbox.checked) {
       selectAllCheckbox.checked = false
     }
-    
+
     // if all choices are selected, then selectAllCheckbox must turn true
     // match all checkboxes of the field, excluding selectAllCheckbox itself and text inputs
-    let allChoices = document.querySelectorAll(  
+    let allChoices = document.querySelectorAll(
       `[id^="${fieldId}_checkbox"]:not([id="${fieldId}_checkbox_select_all_choice"],[id^="${fieldId}_text"])`
     )
     let allChoicesChecked = [...allChoices].map(choice => choice.checked).every(value => value === true)
@@ -67,7 +67,7 @@ function toggleChoiceAttributesVisibility(checkbox) {
   }
 
   if (droppable && !checkbox.checked) {
-    const choiceBlock = document.getElementById(`${fieldId}_choice_block_${index}`)    
+    const choiceBlock = document.getElementById(`${fieldId}_choice_block_${index}`)
     droppable.appendChild(choiceBlock)
   }
 }
@@ -90,7 +90,7 @@ draggables.forEach((dragIcon) => {
   const fieldId = `${dragIcon.id.split('_')[0]}_${dragIcon.id.split('_')[1]}`
   const index = dragIcon.id.split('_').findLast((e) => e)
   let choiceBlock = document.getElementById(`${fieldId}_choice_block_${index}`)
-  
+
   /* DRAG AND DROP */
   dragIcon.addEventListener('dragstart', () => {
     choiceBlock.classList.add('is-dragging')
@@ -103,21 +103,21 @@ draggables.forEach((dragIcon) => {
   dragIcon.addEventListener('touchstart', () => {
     const droppablePosition = droppable.getBoundingClientRect()
     choiceBlock.classList.add('is-dragging')
-    
-    dragIcon.addEventListener('touchmove', (eve) => {      
+
+    dragIcon.addEventListener('touchmove', (eve) => {
       eve.preventDefault()
 
       let nextX = eve.changedTouches[0].clientX
       let nextY = eve.changedTouches[0].clientY
 
       if ( // as long as touchmove happens inside of droppable
-        nextX >= droppablePosition.left & 
+        nextX >= droppablePosition.left &
         nextX <= droppablePosition.right &
         nextY >= droppablePosition.top &
         nextY <= droppablePosition.bottom
       ) {
         const bottomChoiceBlock = insertAboveTask(droppable, nextY)
-        
+
         if (!bottomChoiceBlock) {
           droppable.appendChild(choiceBlock)
         } else {
@@ -129,7 +129,7 @@ draggables.forEach((dragIcon) => {
     dragIcon.addEventListener('touchend', () => {
       choiceBlock.classList.remove('is-dragging')
     })
-  
+
   })
 })
 
@@ -140,7 +140,7 @@ droppable?.addEventListener('dragover', (e) => {
 
   const bottomChoiceBlock = insertAboveTask(droppable, e.clientY)
   const curChoiceBlock = document.querySelector('.is-dragging')
-  
+
   if (!bottomChoiceBlock) {
     droppable.appendChild(curChoiceBlock)
   } else {
@@ -158,7 +158,7 @@ const insertAboveTask = (zone, mouseY) => {
   els.forEach((choiceBlock) => {
     const { top } = choiceBlock.getBoundingClientRect()
     const offset = mouseY - top
-    
+
     if (offset < 0 && offset > closestOffset) {
       closestOffset = offset
       closestChoiceBlock = choiceBlock

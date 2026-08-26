@@ -17,7 +17,7 @@
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
-  
+
 .droppable .checkbox {
   width: 100%;
   align-items: center;
@@ -38,21 +38,21 @@
 }
 
 .multivalue-checkbox {
-  flex-grow: 1; 
-  display: flex; 
+  flex-grow: 1;
+  display: flex;
   align-items: center;
-} 
+}
 
 .multivalue-checkbox-checkbox {
-  flex-grow: 1; 
-  display: flex; 
+  flex-grow: 1;
+  display: flex;
   gap: 1rem;
   min-height: 40px;
   align-items: center;
 }
 
 .multivalue-checkbox-text {
-  width: 60%; 
+  width: 60%;
   align-items: center;
   white-space: nowrap;
   gap: 1rem;
@@ -61,7 +61,7 @@
 .multivalue-checkbox-text-input {
   flex-grow:1;
 }
-  
+
 .is-dragging {
   scale: 1.05;
 }
@@ -97,4 +97,3 @@
     position: static;
   }
 }
-

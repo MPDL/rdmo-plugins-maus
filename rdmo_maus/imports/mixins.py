@@ -24,7 +24,7 @@ from ..utils import get_optionset_options, get_pages, get_questionsets, groupby_
 
 
 class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
-    '''This class is meant for import plugin providers. It enables the import of
+    """This class is meant for import plugin providers. It enables the import of
     repository metadata (license, authorship, dependencies) as well as
     RDMO xml project files in projects with the Software Management Plan (SMP) catalogue.
 
@@ -63,7 +63,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
     Returns a list of all repository languages (list[str]) or an empty list
 
-    '''
+    """
 
     import_project = None
     xml_import_plugin = None
@@ -88,86 +88,80 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             'orcid-autocomplete': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/orcid-autocomplete',
             'role': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/role',
             'ror-id': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/affiliation/ror-id',
-            'ror-autocomplete': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/affiliation/ror-autocomplete'
+            'ror-autocomplete': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/affiliation/ror-autocomplete',
         },
-        'pid': 'https://rdmorganiser.github.io/terms/domain/smp/software-pid'
+        'pid': 'https://rdmorganiser.github.io/terms/domain/smp/software-pid',
     }
 
     @property
     def smp_import_map(self):
         smp_import_map = {
             'xml': {
-                'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'import_choice': ('True,data/smp.xml', ('RDMO XML', _('File path')), 'xml'),
-                    'import_choice_validators': {
-                        'text': [FilePathExtensionValidator('.xml')]
-                    },
+                    'import_choice_validators': {'text': [FilePathExtensionValidator('.xml')]},
                     'import_choice_attributes': {
                         'text': {
                             'placeholder': _('example_folder/example_file_name.xml'),
                         }
-                    }
+                    },
                 },
                 'process_method': self.process_xml,
-                'process_method_kwargs': {}
+                'process_method_kwargs': {},
             },
             'citation': {
-                'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'import_choice': ('True,CITATION.cff', ('CITATION', _('File path')), 'citation'),
-                    'import_choice_validators': {
-                        'text': [FilePathExtensionValidator('.cff')]
-                    },
+                    'import_choice_validators': {'text': [FilePathExtensionValidator('.cff')]},
                     'import_choice_attributes': {
                         'text': {
                             'placeholder': 'CITATION.cff',
                         }
-                    }
+                    },
                 },
                 'process_method': self.process_citation,
-                'process_method_kwargs': {'get_citation': self.get_citation}
+                'process_method_kwargs': {'get_citation': self.get_citation},
             },
             'codemeta': {
-                'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'import_choice': ('True,codemeta.json', ('CodeMeta', _('File path')), 'codemeta'),
-                    'import_choice_validators': {
-                        'text': [FilePathExtensionValidator('.json')]
-                    },
+                    'import_choice_validators': {'text': [FilePathExtensionValidator('.json')]},
                     'import_choice_attributes': {
                         'text': {
                             'placeholder': 'codemeta.json',
                         }
-                    }
+                    },
                 },
                 'process_method': self.process_codemeta,
-                'process_method_kwargs': {'get_codemeta': self.get_codemeta}
+                'process_method_kwargs': {'get_codemeta': self.get_codemeta},
             },
             'license': {
-                'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'import_choice': ('True', 'LICENSE', 'license'),
                     'import_choice_validators': {},
-                    'import_choice_attributes': {}
+                    'import_choice_attributes': {},
                 },
                 'process_method': self.process_license,
-                'process_method_kwargs': {'get_license': self.get_license}
+                'process_method_kwargs': {'get_license': self.get_license},
             },
             'sbom': {
-                'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'import_choice': ('True', _('Repository dependency graph'), 'sbom'),
                     'import_choice_validators': {},
-                    'import_choice_attributes': {}
+                    'import_choice_attributes': {},
                 },
                 'process_method': self.process_sbom,
-                'process_method_kwargs': {'get_sbom': self.get_sbom}
+                'process_method_kwargs': {'get_sbom': self.get_sbom},
             },
             'languages': {
-                'imports': { # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
+                'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'import_choice': ('True', _('Repository languages'), 'languages'),
                     'import_choice_validators': {},
-                    'import_choice_attributes': {}
+                    'import_choice_attributes': {},
                 },
                 'process_method': self.process_languages,
-                'process_method_kwargs': {'get_languages': self.get_languages}
-            }
+                'process_method_kwargs': {'get_languages': self.get_languages},
+            },
         }
 
         return smp_import_map
@@ -177,26 +171,33 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         smp_import_choices = {}
         if self.current_project is None or self.current_project.catalog.uri_path == 'smp':
             smp_import_choices = {
-                'choices': [
-                    v.get('imports', {}).get('import_choice') for v in self.smp_import_map.values()
-                ],
+                'choices': [v.get('imports', {}).get('import_choice') for v in self.smp_import_map.values()],
                 'choice_validators': {
-                    k:v.get('imports', {}).get('import_choice_validators') for k,v in self.smp_import_map.items()
+                    k: v.get('imports', {}).get('import_choice_validators')
+                    for k, v in self.smp_import_map.items()
                     if len(v.get('imports', {}).get('import_choice_validators', {})) > 0
                 },
                 'choice_attributes': {
-                    k:v.get('imports', {}).get('import_choice_attributes') for k,v in self.smp_import_map.items()
+                    k: v.get('imports', {}).get('import_choice_attributes')
+                    for k, v in self.smp_import_map.items()
                     if len(v.get('imports', {}).get('import_choice_attributes', {})) > 0
-                }
+                },
             }
 
         return smp_import_choices
 
     def process_import(
-        self, *, request, headers, request_urls, import_choice_warnings,
-        default_project_title, import_success_template, import_success_context
+        self,
+        *,
+        request,
+        headers,
+        request_urls,
+        import_choice_warnings,
+        default_project_title,
+        import_success_template,
+        import_success_context,
     ):
-        '''Process information from web services and update or create projects with this information. '''
+        """Process information from web services and update or create projects with this information."""
 
         # 1. Create (or extract from repo xml file) Project() instance
         self.create_import_project(headers, request_urls.get('xml'), default_project_title)
@@ -205,10 +206,15 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         import_values = self.get_import_values(headers, request_urls)
 
         if len(import_values) == 0:
-            return render(request, 'core/error.html', {
-                'title': _('Import error'),
-                'errors': [_("Either no information was found in the repository, or it could not be imported.")]
-            }, status=200)
+            return render(
+                request,
+                'core/error.html',
+                {
+                    'title': _('Import error'),
+                    'errors': [_('Either no information was found in the repository, or it could not be imported.')],
+                },
+                status=200,
+            )
 
         # 3. Create xml file with all info from repo (and from xml file in repo if exists)
         xml_response = self.create_import_xml_file(request, import_values, request_urls)
@@ -221,26 +227,20 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             else:
                 return redirect('project_create_import')
 
-        return render(
-            request,
-            import_success_template,
-            import_success_context,
-            status=200
-        )
+        return render(request, import_success_template, import_success_context, status=200)
 
     def merge_licenses(self, new_license_values, import_values):
-        '''Merge license information from all imported sources to unique SMP license values.
+        """Merge license information from all imported sources to unique SMP license values.
 
         Example: import sources are the CITATION.cff file and the repository LICENSE.
 
         If the information in both sources is the same license, only one value is created.
         If the information in both sources differs, multiple but unique values are created.
 
-        '''
+        """
 
         existing_license_option_uris = [
-            v.option.uri for v in import_values
-            if v.attribute.uri == self.metadata_attr_mapping.get('license')
+            v.option.uri for v in import_values if v.attribute.uri == self.metadata_attr_mapping.get('license')
         ]
 
         grouped_new_license_values = reduce(partial(groupby_values, groupby='option'), new_license_values, {})
@@ -252,7 +252,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         return import_values
 
     def merge_languages(self, new_language_values, import_values):
-        '''Merge language information from all imported sources to unique SMP language values.
+        """Merge language information from all imported sources to unique SMP language values.
         Furthermore, merged values are sorted by the index of matching existing project language values.
 
         Example 1: import sources are the RDMO xml file and the repository languages.
@@ -274,10 +274,11 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
           no project language value has (no imported value gets an index of 0).
         - If imported, the project language values will be: 0. Python, 1. JavaScript, 2. HTML, 3. R
 
-        '''
+        """
 
         import_values_languages = [
-            (v.collection_index, v.text) for v in import_values
+            (v.collection_index, v.text)
+            for v in import_values
             if v.attribute.uri == self.metadata_attr_mapping.get('language')
         ]
 
@@ -287,17 +288,16 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 attribute__uri=self.metadata_attr_mapping.get('language')
             ).order_by('collection_index')
 
-            project_languages = [(v.collection_index, v.text) for v in project_language_values ]
+            project_languages = [(v.collection_index, v.text) for v in project_language_values]
 
         grouped_new_language_values = reduce(partial(groupby_values, groupby='text'), new_language_values, {})
         unique_new_language_values = [value_list[0] for value_list in grouped_new_language_values.values()]
 
-        matching_languages = {} # imported languages that already exist in current_project
+        matching_languages = {}  # imported languages that already exist in current_project
         for import_index, language_value in enumerate(unique_new_language_values):
             language = language_value.text
             matching_project_language_index, matching_project_language = next(
-                ((i, lang) for (i, lang) in project_languages if lang.lower() == language.lower()),
-                (None, None)
+                ((i, lang) for (i, lang) in project_languages if lang.lower() == language.lower()), (None, None)
             )
 
             if matching_project_language:
@@ -323,26 +323,19 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         if len(index_to_update) > 0:
             usable_matching_language_indizes = [
-                i for i in matching_languages
-                if i not in [j for (j, o) in project_languages]
+                i for i in matching_languages if i not in [j for (j, o) in project_languages]
             ]
             new_values_language_indizes = [v.collection_index for v in new_values]
 
             # starting_index accounts for project languages, import_values languages and new_values languages
             max_project_language_index = (
-                max([j for (j, _lang) in project_languages])
-                if len(project_languages) > 0
-                else 0
+                max([j for (j, _lang) in project_languages]) if len(project_languages) > 0 else 0
             )
             max_import_values_language_index = (
-                max([j for (j, _lang) in import_values_languages])
-                if len(import_values_languages) > 0
-                else 0
+                max([j for (j, _lang) in import_values_languages]) if len(import_values_languages) > 0 else 0
             )
             max_new_values_language_index = (
-                max(new_values_language_indizes)
-                if len(new_values_language_indizes) > 0
-                else 0
+                max(new_values_language_indizes) if len(new_values_language_indizes) > 0 else 0
             )
             starting_index = 1 + max(
                 max_project_language_index, max_import_values_language_index, max_new_values_language_index
@@ -350,7 +343,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
             available_indizes = [
                 *usable_matching_language_indizes,
-                *list(range(starting_index, (starting_index + len(index_to_update))))
+                *list(range(starting_index, (starting_index + len(index_to_update)))),
             ]
 
             for i, v in enumerate(index_to_update):
@@ -363,19 +356,20 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         return import_values
 
     def merge_dependencies(self, new_dependencies_values, import_values):
-        '''Merge dependency information from all imported sources to a single string.
+        """Merge dependency information from all imported sources to a single string.
 
-        If there is a dependecies value in the project, return a value that merges its text
+        If there is a dependencies value in the project, return a value that merges its text
         with the imported information. Otherwise, return a value with the imported information.
 
         Example: imported dependencies are "requests" and "PyYAML", and project dependency is "rdmo".
 
         merge_dependencies() returns a value with text: rdmo\nrequests\nPyYAML.
 
-        '''
+        """
 
         existing_dependencies_value_list = [
-            (i, v) for i, v in enumerate(import_values)
+            (i, v)
+            for i, v in enumerate(import_values)
             if v.attribute.uri == self.metadata_attr_mapping.get('dependencies')
         ]
 
@@ -402,8 +396,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
             # There is only one dependencies value per project, delete duplicates if they exist
             duplicated_dependencies_value_indices = [
-                i for (i, v) in existing_dependencies_value_list
-                if i != dependencies_value_index
+                i for (i, v) in existing_dependencies_value_list if i != dependencies_value_index
             ]
             if len(duplicated_dependencies_value_indices) > 0:
                 for i in duplicated_dependencies_value_indices:
@@ -412,9 +405,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         return import_values
 
     def merge_dependency_licenses(self, new_dependency_licenses_values, import_values):
-        '''Merge dependency license information from all imported sources to a single string.
+        """Merge dependency license information from all imported sources to a single string.
 
-        If there is a dependecy licenses value in the project, return a value that merges its text
+        If there is a dependency licenses value in the project, return a value that merges its text
         with the imported information. Otherwise, return a value with the imported information.
 
         Example: imported dependency licenses are "MIT (package_1)" and "Apache 2.0 (package_2, package_3)",
@@ -423,10 +416,11 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         merge_dependency_licenses() returns a value with text:
         "AGPL 3.0 (package_0)\nMIT (package_1)\nApache 2.0 (package_2, package_3)".
 
-        '''
+        """
 
         existing_dependency_licenses_value_list = [
-            (i, v) for i, v in enumerate(import_values)
+            (i, v)
+            for i, v in enumerate(import_values)
             if v.attribute.uri == self.metadata_attr_mapping.get('dependency_licenses')
         ]
 
@@ -457,8 +451,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
             # There is only one dependency licenses value per project, delete duplicates if they exist
             duplicated_dependency_licenses_value_indices = [
-                i for (i, v) in existing_dependency_licenses_value_list
-                if i != dependency_licenses_value_index
+                i for (i, v) in existing_dependency_licenses_value_list if i != dependency_licenses_value_index
             ]
             if len(duplicated_dependency_licenses_value_indices) > 0:
                 for i in duplicated_dependency_licenses_value_indices:
@@ -467,11 +460,10 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         return import_values
 
     def merge_title(self, new_title_values, import_values):
-        '''Append title value from first import source (import sources are sorted by importance). '''
+        """Append title value from first import source (import sources are sorted by importance)."""
 
         existing_title_value_list = [
-            v for v in import_values
-            if v.attribute.uri == self.metadata_attr_mapping.get('title')
+            v for v in import_values if v.attribute.uri == self.metadata_attr_mapping.get('title')
         ]
 
         if len(existing_title_value_list) == 0:
@@ -480,7 +472,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         return import_values
 
     def merge_contributors(self, new_contributor_values, import_values):
-        '''Merge contributor information from all imported sources.
+        """Merge contributor information from all imported sources.
         Furthermore, merged values are sorted by the index of matching existing project contributor values.
 
         Example 1: import sources are the RDMO xml file and the CITATION.cff file.
@@ -509,14 +501,16 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             0. {family-names: Musterfrau, given-names: Muriel P., orcid: 123-456},
             1. {family-names: Schmidt, given-names: Peter, orcid: 789-012}
 
-        '''
+        """
 
         import_values_contributor_indizes = [
-            v.set_index for v in import_values
+            v.set_index
+            for v in import_values
             if v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('id')
         ]
         import_values_orcids = [
-            v.text for v in import_values
+            v.text
+            for v in import_values
             if v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('orcid')
         ]
 
@@ -544,24 +538,27 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         grouped_new_contributor_values = reduce(
             partial(groupby_values, groupby='set_index'),
             [v for v in new_contributor_values if v.attribute.uri not in employment_attributes],
-            {}
+            {},
         )
         grouped_new_contributor_values = reduce(
             partial(groupby_values, groupby='set_prefix'),
             [v for v in new_contributor_values if v.attribute.uri in employment_attributes],
-            grouped_new_contributor_values
+            grouped_new_contributor_values,
         )
 
-        matching_contributors = {} # imported contributors that already exist in current_project
+        matching_contributors = {}  # imported contributors that already exist in current_project
         for import_index, contributor_values_list in grouped_new_contributor_values.items():
             contributor_orcid = next(
-                (v.text for v in contributor_values_list
-                 if v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('orcid')),
-                None
+                (
+                    v.text
+                    for v in contributor_values_list
+                    if v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('orcid')
+                ),
+                None,
             )
             matching_project_contributor_index, matching_project_orcid = next(
                 ((i, o) for (i, o) in project_orcids if contributor_orcid is not None and o == contributor_orcid),
-                (None, None)
+                (None, None),
             )
 
             if matching_project_orcid:
@@ -572,7 +569,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                         v.set_index = matching_project_contributor_index
 
                     if attr_uri in employment_attributes:
-                        v.set_prefix = str(matching_project_contributor_index) # set_prefix is a string field
+                        v.set_prefix = str(matching_project_contributor_index)  # set_prefix is a string field
 
                 matching_contributors[int(import_index)] = contributor_values_list
 
@@ -580,9 +577,12 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         index_to_update = []
         for i, (import_index, contributor_values_list) in enumerate(grouped_new_contributor_values.items()):
             contributor_orcid = next(
-                (v.text for v in contributor_values_list
-                 if v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('orcid')),
-                None
+                (
+                    v.text
+                    for v in contributor_values_list
+                    if v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('orcid')
+                ),
+                None,
             )
             if contributor_orcid in import_values_orcids:
                 continue
@@ -591,11 +591,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 new_values.extend(matching_contributors.get(int(import_index)))
                 continue
 
-            index = (
-                i + max(import_values_contributor_indizes) 
-                if len(import_values_contributor_indizes) > 0
-                else i
-            )
+            index = i + max(import_values_contributor_indizes) if len(import_values_contributor_indizes) > 0 else i
             if index in project_contributor_indizes:
                 index_to_update.append(contributor_values_list)
                 continue
@@ -607,41 +603,32 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     v.set_index = index
 
                 if attr_uri in employment_attributes:
-                    v.set_prefix = str(index) # set_prefix is a string field
+                    v.set_prefix = str(index)  # set_prefix is a string field
 
                 new_values.append(v)
 
         if len(index_to_update) > 0:
             new_values_contributor_indizes = [
-                v.set_index for v in new_values
+                v.set_index
+                for v in new_values
                 if v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('id')
             ]
 
             # starting_index accounts for project contributors, import_values contributors and new_values contributors
             max_project_contributor_index = (
-                max(project_contributor_indizes)
-                if len(project_contributor_indizes) > 0
-                else 0
+                max(project_contributor_indizes) if len(project_contributor_indizes) > 0 else 0
             )
             max_import_values_contributor_index = (
-                max(import_values_contributor_indizes)
-                if len(import_values_contributor_indizes) > 0
-                else 0
+                max(import_values_contributor_indizes) if len(import_values_contributor_indizes) > 0 else 0
             )
             max_new_values_contributor_index = (
-                max(new_values_contributor_indizes)
-                if len(new_values_contributor_indizes) > 0
-                else 0
+                max(new_values_contributor_indizes) if len(new_values_contributor_indizes) > 0 else 0
             )
             starting_index = 1 + max(
-                max_project_contributor_index,
-                max_import_values_contributor_index,
-                max_new_values_contributor_index
+                max_project_contributor_index, max_import_values_contributor_index, max_new_values_contributor_index
             )
 
-            available_indizes = [
-                *list(range(starting_index, (starting_index + len(index_to_update))))
-            ]
+            available_indizes = [*list(range(starting_index, (starting_index + len(index_to_update))))]
             available_indizes = list(set(available_indizes))
 
             for i, contributor_values_list in enumerate(index_to_update):
@@ -653,7 +640,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                         v.set_index = index
 
                     if attr_uri in employment_attributes:
-                        v.set_prefix = str(index) # set_prefix is a string value
+                        v.set_prefix = str(index)  # set_prefix is a string value
 
                     new_values.append(v)
 
@@ -663,27 +650,23 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         return import_values, merged_new_contributors
 
     def merge_pids(self, new_pid_values, import_values):
-        '''Merge pid information from all imported sources to unique SMP pid values.
+        """Merge pid information from all imported sources to unique SMP pid values.
 
         Example: import sources are the CITATION.cff file and the RDMO xml file.
 
         If the information in both sources is the same pid (by type), only one value is created.
         If the information in both sources differs, multiple but unique values are created.
 
-        '''
+        """
 
         existing_pid_option_uris = [
-            v.option.uri for v in import_values
-            if v.attribute.uri == self.metadata_attr_mapping.get('pid')
+            v.option.uri for v in import_values if v.attribute.uri == self.metadata_attr_mapping.get('pid')
         ]
 
         grouped_new_pid_values = reduce(partial(groupby_values, groupby='option'), new_pid_values, {})
         unique_new_pid_values = [value_list[0] for value_list in grouped_new_pid_values.values()]
 
-        new_values = [
-            v for v in unique_new_pid_values
-            if v.option.uri not in existing_pid_option_uris
-        ]
+        new_values = [v for v in unique_new_pid_values if v.option.uri not in existing_pid_option_uris]
 
         import_values.extend(new_values)
         merged_new_pids = len(new_values) > 0
@@ -691,22 +674,23 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         return import_values, merged_new_pids
 
     def merge_application_class(self, new_application_class_values, import_values):
-        '''Append application class value with highest class. '''
+        """Append application class value with highest class."""
 
         existing_application_class_value_list = [
-            (i, v) for i, v in enumerate(import_values)
+            (i, v)
+            for i, v in enumerate(import_values)
             if v.attribute.uri == 'https://rdmorganiser.github.io/terms/domain/smp/application-class'
         ]
 
         application_class_values = [
-            v for v in [*new_application_class_values, *import_values]
+            v
+            for v in [*new_application_class_values, *import_values]
             if v.attribute.uri == 'https://rdmorganiser.github.io/terms/domain/smp/application-class'
         ]
         highest_class_option = max([int(v.option.uri.split('/')[-1]) for v in application_class_values])
 
         application_class_v = next(
-            v for v in application_class_values
-            if int(v.option.uri.split('/')[-1]) == highest_class_option
+            v for v in application_class_values if int(v.option.uri.split('/')[-1]) == highest_class_option
         )
 
         if len(existing_application_class_value_list) == 0:
@@ -716,8 +700,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             application_class_value.option = application_class_v.option
 
             duplicated_application_class_value_indices = [
-                i for (i, v) in existing_application_class_value_list
-                if i != application_class_value_index
+                i for (i, v) in existing_application_class_value_list if i != application_class_value_index
             ]
             if len(duplicated_application_class_value_indices) > 0:
                 for i in duplicated_application_class_value_indices:
@@ -726,7 +709,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         return import_values
 
     def check_attribute(self, attr_uri):
-        '''Check if attribute exists and is still used by project catalog. '''
+        """Check if attribute exists and is still used by project catalog."""
 
         v_attribute = self.get_attribute(attr_uri)
 
@@ -735,18 +718,22 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         catalog_questions = self.get_questions(self.import_project.catalog)
         catalog_questionsets = get_questionsets(self.import_project.catalog)
         catalog_pages = get_pages(self.import_project.catalog)
-        if (
-                v_attribute and (
-                    catalog_questions.get(attr_uri) or
-                    catalog_questionsets.get(attr_uri) or
-                    catalog_pages.get(attr_uri)
-                )
-            ):
+        if v_attribute and (
+            catalog_questions.get(attr_uri) or catalog_questionsets.get(attr_uri) or catalog_pages.get(attr_uri)
+        ):
             return v_attribute
 
     def create_value(
-        self, attribute, *, set_collection=False, set_prefix='', set_index=0,
-        collection_index=0, text=None, option=None, external_id=None
+        self,
+        attribute,
+        *,
+        set_collection=False,
+        set_prefix='',
+        set_index=0,
+        collection_index=0,
+        text=None,
+        option=None,
+        external_id=None,
     ):
         value = Value()
         value.attribute = attribute
@@ -767,14 +754,12 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
     def get_license_option(self, license_optionset_uri, license_id):
         options = get_optionset_options(license_optionset_uri)
 
-        collection_index, option = next(
-            ((i, o) for i, o in enumerate(options) if o.text == license_id),
-            (None, None)
-        )
+        collection_index, option = next(((i, o) for i, o in enumerate(options) if o.text == license_id), (None, None))
 
         if option is None:
             collection_index, option = next(
-                (i, o) for i, o in enumerate(options)
+                (i, o)
+                for i, o in enumerate(options)
                 if o.uri == 'https://rdmorganiser.github.io/terms/options/software-license/other-license'
             )
 
@@ -782,22 +767,19 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
     def get_license_value(self, _id):
         collection_index, license_option = self.get_license_option(
-            license_optionset_uri='https://rdmorganiser.github.io/terms/options/software-license',
-            license_id=_id
+            license_optionset_uri='https://rdmorganiser.github.io/terms/options/software-license', license_id=_id
         )
         v_attribute = self.check_attribute(self.metadata_attr_mapping.get('license'))
 
         value = None
         if v_attribute:
             license_text = (
-                _id if license_option.uri == 'https://rdmorganiser.github.io/terms/options/software-license/other-license'
+                _id
+                if license_option.uri == 'https://rdmorganiser.github.io/terms/options/software-license/other-license'
                 else ''
             )
             value = self.create_value(
-                v_attribute,
-                collection_index=collection_index,
-                text=license_text,
-                option=license_option
+                v_attribute, collection_index=collection_index, text=license_text, option=license_option
             )
 
         return value
@@ -823,11 +805,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         contributor_values = []
 
         for i, author in enumerate(cff_data.get('authors', [])):
-            type = (
-                'person'
-                if (author.get('given-names') or author.get('family-names'))
-                else 'entity'
-            )
+            type = 'person' if (author.get('given-names') or author.get('family-names')) else 'entity'
 
             set_v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('id'))
             if set_v_attribute is None:
@@ -839,29 +817,23 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 if type == 'person'
                 else author.get('name')
             )
-            set_label = set_label if (set_label and set_label != '') else f'cff author # {i+1}'
-            contributor_values.append(self.create_value(
-                set_v_attribute,
-                set_collection=True,
-                set_index=i,
-                text=set_label
-            ))
+            set_label = set_label if (set_label and set_label != '') else f'cff author # {i + 1}'
+            contributor_values.append(
+                self.create_value(set_v_attribute, set_collection=True, set_index=i, text=set_label)
+            )
 
             # TYPE VALUE
             type_v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('type'))
             option_uri = (
-                    'https://rdmo.mpdl.mpg.de/terms/options/partner-types/person'
-                    if type == 'person'
-                    else 'https://rdmo.mpdl.mpg.de/terms/options/partner-types/entity'
-                )
+                'https://rdmo.mpdl.mpg.de/terms/options/partner-types/person'
+                if type == 'person'
+                else 'https://rdmo.mpdl.mpg.de/terms/options/partner-types/entity'
+            )
             type_v_option = self.get_option(option_uri)
             if type_v_attribute and type_v_option:
-                contributor_values.append(self.create_value(
-                    type_v_attribute,
-                    set_collection=True,
-                    set_index=i,
-                    option=type_v_option
-                ))
+                contributor_values.append(
+                    self.create_value(type_v_attribute, set_collection=True, set_index=i, option=type_v_option)
+                )
 
             for k, v in author.items():
                 if v is None:
@@ -870,32 +842,26 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 # no SMP field for name or website for a contributor of type person,
                 # or orcid for a contributor of type entity
                 # but possible by cff schema
-                if (
-                    ((k == 'name' or k == 'website') and type == 'person') or
-                    (k == 'orcid' and type == 'entity')
-                ):
+                if ((k == 'name' or k == 'website') and type == 'person') or (k == 'orcid' and type == 'entity'):
                     continue
 
                 v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get(k))
                 if k != 'affiliation' and v_attribute:
-                    contributor_values.append(self.create_value(
-                        v_attribute,
-                        set_collection=True,
-                        set_index=i,
-                        text=v
-                    ))
+                    contributor_values.append(self.create_value(v_attribute, set_collection=True, set_index=i, text=v))
 
                 elif k == 'affiliation' and v_attribute:
                     cff_a_str = v
                     affiliations = cff_a_str.split(' & ')
                     for j, a in enumerate(affiliations):
-                        contributor_values.append(self.create_value(
-                            v_attribute,
-                            set_collection=True,
-                            set_prefix=str(i), # set_prefix is a string field
-                            set_index=j,
-                            text=a
-                        ))
+                        contributor_values.append(
+                            self.create_value(
+                                v_attribute,
+                                set_collection=True,
+                                set_prefix=str(i),  # set_prefix is a string field
+                                set_index=j,
+                                text=a,
+                            )
+                        )
 
         return contributor_values
 
@@ -903,13 +869,13 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         options = get_optionset_options(pid_optionset_uri)
 
         collection_index, option = next(
-            ((i, o) for i, o in enumerate(options) if identifier_type and o.uri.endswith(identifier_type)),
-            (None, None)
+            ((i, o) for i, o in enumerate(options) if identifier_type and o.uri.endswith(identifier_type)), (None, None)
         )
 
         if option is None:
             collection_index, option = next(
-                (i, o) for i, o in enumerate(options)
+                (i, o)
+                for i, o in enumerate(options)
                 if o.uri == 'https://rdmorganiser.github.io/terms/options/software_identifier/other'
             )
 
@@ -936,17 +902,15 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
             identifier_type = identifier.get('type')
             collection_index, identifier_option = self.get_pid_option(
-                'https://rdmorganiser.github.io/terms/options/software_identifier',
-                identifier_type
+                'https://rdmorganiser.github.io/terms/options/software_identifier', identifier_type
             )
             v_attribute = self.check_attribute(self.metadata_attr_mapping.get('pid'))
             if identifier_option and v_attribute:
-                pid_values.append(self.create_value(
-                    v_attribute,
-                    collection_index=collection_index,
-                    text=value,
-                    option=identifier_option
-                ))
+                pid_values.append(
+                    self.create_value(
+                        v_attribute, collection_index=collection_index, text=value, option=identifier_option
+                    )
+                )
 
         return pid_values
 
@@ -991,15 +955,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         codemeta_authors = []
         codemeta_roles = []
         for author in raw_codemeta_authors:
-            raw_type = (
-                author.get('@type') if '@type' in author
-                else(author.get('type') if 'type' in author else None)
-            )
+            raw_type = author.get('@type') if '@type' in author else (author.get('type') if 'type' in author else None)
 
-            type = (
-                'person' if raw_type == 'Person'
-                else('entity' if raw_type == 'Organization' else raw_type)
-            )
+            type = 'person' if raw_type == 'Person' else ('entity' if raw_type == 'Organization' else raw_type)
 
             if type == 'Role':
                 codemeta_roles.append(author)
@@ -1024,56 +982,42 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 if type == 'person'
                 else author.get('name')
             )
-            
-            set_label = set_label if (set_label and set_label != '') else f'cff author # {i+1}'
-            contributor_values.append(self.create_value(
-                set_v_attribute,
-                set_collection=True,
-                set_index=i,
-                text=set_label
-            ))
+
+            set_label = set_label if (set_label and set_label != '') else f'cff author # {i + 1}'
+            contributor_values.append(
+                self.create_value(set_v_attribute, set_collection=True, set_index=i, text=set_label)
+            )
 
             # TYPE VALUE
             type_v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('type'))
             option_uri = (
-                    'https://rdmo.mpdl.mpg.de/terms/options/partner-types/person'
-                    if type == 'person'
-                    else 'https://rdmo.mpdl.mpg.de/terms/options/partner-types/entity'
-                )
+                'https://rdmo.mpdl.mpg.de/terms/options/partner-types/person'
+                if type == 'person'
+                else 'https://rdmo.mpdl.mpg.de/terms/options/partner-types/entity'
+            )
             type_v_option = self.get_option(option_uri)
             if type_v_attribute and type_v_option:
-                contributor_values.append(self.create_value(
-                    type_v_attribute,
-                    set_collection=True,
-                    set_index=i,
-                    option=type_v_option
-                ))
+                contributor_values.append(
+                    self.create_value(type_v_attribute, set_collection=True, set_index=i, option=type_v_option)
+                )
 
             for k, v in author.items():
                 if v is None or v == '':
                     continue
 
                 # no SMP field for name for a contributor of type person
-                if (k == 'name' and type == 'person'):
+                if k == 'name' and type == 'person':
                     continue
 
                 v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get(k))
                 if k in ['givenName', 'familyName', 'name'] and v_attribute:
-                    contributor_values.append(self.create_value(
-                        v_attribute,
-                        set_collection=True,
-                        set_index=i,
-                        text=v
-                    ))
+                    contributor_values.append(self.create_value(v_attribute, set_collection=True, set_index=i, text=v))
 
                 v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('orcid'))
                 if (k == 'id' or k == '@id') and author.get(k).startswith('https://orcid.org/') and v_attribute:
-                    contributor_values.append(self.create_value(
-                        v_attribute,
-                        set_collection=True,
-                        set_index=i,
-                        text=author.get(k)
-                    ))
+                    contributor_values.append(
+                        self.create_value(v_attribute, set_collection=True, set_index=i, text=author.get(k))
+                    )
 
                 if k == 'affiliation':
                     affiliations = []
@@ -1084,41 +1028,43 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
                     for j, a in enumerate(affiliations):
                         affiliation_name = a.get('name')
-                        affiliation_id = (
-                            a.get('id') if 'id' in a
-                            else (a.get('@id') if '@id' in a else None)
-                        )
+                        affiliation_id = a.get('id') if 'id' in a else (a.get('@id') if '@id' in a else None)
 
                         v_attribute = self.check_attribute(
                             self.metadata_attr_mapping.get('contributor', {}).get('affiliation')
                         )
                         if affiliation_name and v_attribute:
-                            contributor_values.append(self.create_value(
-                                v_attribute,
-                                set_collection=True,
-                                set_prefix=str(i), # set_prefix is a string field
-                                set_index=j,
-                                text=affiliation_name
-                            ))
+                            contributor_values.append(
+                                self.create_value(
+                                    v_attribute,
+                                    set_collection=True,
+                                    set_prefix=str(i),  # set_prefix is a string field
+                                    set_index=j,
+                                    text=affiliation_name,
+                                )
+                            )
 
                         v_attribute = self.check_attribute(
                             self.metadata_attr_mapping.get('contributor', {}).get('ror-id')
                         )
                         if affiliation_id and affiliation_id.startswith('https://ror.org/') and v_attribute:
-                            contributor_values.append(self.create_value(
-                                v_attribute,
-                                set_collection=True,
-                                set_prefix=str(i), # set_prefix is a string field
-                                set_index=j,
-                                text=affiliation_id
-                            ))
-
+                            contributor_values.append(
+                                self.create_value(
+                                    v_attribute,
+                                    set_collection=True,
+                                    set_prefix=str(i),  # set_prefix is a string field
+                                    set_index=j,
+                                    text=affiliation_id,
+                                )
+                            )
 
         for i, role in enumerate(codemeta_roles):
             author_id = (
-                role.get('author') if 'author' in role
+                role.get('author')
+                if 'author' in role
                 else (
-                    role.get('contributor') if 'contributor' in role
+                    role.get('contributor')
+                    if 'contributor' in role
                     else (role.get('maintainer') if 'maintainer' in role else None)
                 )
             )
@@ -1126,13 +1072,14 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             if author_id:
                 author_index = next(
                     (
-                        v.set_index for v in contributor_values
+                        v.set_index
+                        for v in contributor_values
                         if (
-                            v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('orcid') and
-                            v.text == author_id
+                            v.attribute.uri == self.metadata_attr_mapping.get('contributor', {}).get('orcid')
+                            and v.text == author_id
                         )
                     ),
-                    None
+                    None,
                 )
 
                 role_name = role.get('roleName')
@@ -1140,19 +1087,17 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     author_affiliation_indizes = [
                         a.set_index for a in [v for v in contributor_values if v.set_prefix == str(author_index)]
                     ]
-                    role_index = (
-                        i + 1 + max(author_affiliation_indizes)
-                        if len(author_affiliation_indizes) > 0
-                        else i
-                    )
+                    role_index = i + 1 + max(author_affiliation_indizes) if len(author_affiliation_indizes) > 0 else i
                     v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('role'))
-                    contributor_values.append(self.create_value(
-                        v_attribute,
-                        set_collection=True,
-                        set_prefix=str(author_index), # set_prefix is a string field
-                        set_index=role_index,
-                        text=role_name
-                    ))
+                    contributor_values.append(
+                        self.create_value(
+                            v_attribute,
+                            set_collection=True,
+                            set_prefix=str(author_index),  # set_prefix is a string field
+                            set_index=role_index,
+                            text=role_name,
+                        )
+                    )
 
         return contributor_values
 
@@ -1171,26 +1116,24 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 continue
 
             identifier_type = (
-                identifier.get('propertyID') if 'propertyID' in identifier
+                identifier.get('propertyID')
+                if 'propertyID' in identifier
                 else (identifier.get('name') if 'name' in identifier else None)
             )
             if identifier_type:
                 identifier_type = (
-                    'swh' if identifier_type.lower()  == 'software heritage identifier'
-                    else identifier_type.lower()
+                    'swh' if identifier_type.lower() == 'software heritage identifier' else identifier_type.lower()
                 )
                 collection_index, identifier_option = self.get_pid_option(
-                    'https://rdmorganiser.github.io/terms/options/software_identifier',
-                    identifier_type
+                    'https://rdmorganiser.github.io/terms/options/software_identifier', identifier_type
                 )
                 v_attribute = self.check_attribute(self.metadata_attr_mapping.get('pid'))
                 if identifier_option and v_attribute:
-                    pid_values.append(self.create_value(
-                        v_attribute,
-                        collection_index=collection_index,
-                        text=value,
-                        option=identifier_option
-                    ))
+                    pid_values.append(
+                        self.create_value(
+                            v_attribute, collection_index=collection_index, text=value, option=identifier_option
+                        )
+                    )
 
         return pid_values
 
@@ -1202,7 +1145,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             'dependency_licenses': self.merge_dependency_licenses,
             'title': self.merge_title,
             'contributor': self.merge_contributors,
-            'pid': self.merge_pids
+            'pid': self.merge_pids,
         }
 
         if self.xml_import_plugin is None:
@@ -1217,37 +1160,39 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         grouped_import_values = reduce(
             partial(groupby_values, groupby='attribute'),
             [v for v in import_values if v.attribute.uri not in contributor_attribute_uris],
-            {}
+            {},
         )
         grouped_import_values['contributor'] = [
-            v for v in import_values
-            if v.attribute.uri in contributor_attribute_uris
+            v for v in import_values if v.attribute.uri in contributor_attribute_uris
         ]
 
         grouped_xml_values = reduce(
             partial(groupby_values, groupby='attribute'),
             [v for v in self.xml_import_plugin.values if v.attribute.uri not in contributor_attribute_uris],
-            {}
+            {},
         )
         grouped_xml_values['contributor'] = [
-            v for v in self.xml_import_plugin.values
-            if v.attribute.uri in contributor_attribute_uris
+            v for v in self.xml_import_plugin.values if v.attribute.uri in contributor_attribute_uris
         ]
 
         for uri, xml_values_list in grouped_xml_values.items():
             if (
-                uri not in grouped_import_values and
+                uri not in grouped_import_values
+                and
                 # imported xml contributors and languages must always be merged:
                 # they may have different order than matching project values
-                uri != 'contributor' and
-                uri != self.metadata_attr_mapping.get('language')
+                uri != 'contributor'
+                and uri != self.metadata_attr_mapping.get('language')
             ):
                 import_values.extend(xml_values_list)
             else:
                 metadata = next(
-                    (metadata for metadata, attr in self.metadata_attr_mapping.items()
-                     if isinstance(attr, str) and uri == attr),
-                    None
+                    (
+                        metadata
+                        for metadata, attr in self.metadata_attr_mapping.items()
+                        if isinstance(attr, str) and uri == attr
+                    ),
+                    None,
                 )
                 metadata = metadata if metadata else (uri if uri == 'contributor' else None)
                 if metadata:
@@ -1288,23 +1233,18 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             if len(pid_values) > 0:
                 import_values, found_new_pids = self.merge_pids(pid_values, import_values)
 
-        application_class_v_attribute = self.check_attribute('https://rdmorganiser.github.io/terms/domain/smp/application-class')
+        application_class_v_attribute = self.check_attribute(
+            'https://rdmorganiser.github.io/terms/domain/smp/application-class'
+        )
         application_class_option_uri = (
-                'https://rdmorganiser.github.io/terms/options/application-class/2'
-                if found_new_contributors
-                else 'https://rdmorganiser.github.io/terms/options/application-class/1'
-            )
+            'https://rdmorganiser.github.io/terms/options/application-class/2'
+            if found_new_contributors
+            else 'https://rdmorganiser.github.io/terms/options/application-class/1'
+        )
         application_class_option = self.get_option(application_class_option_uri)
 
-        if (
-            (found_new_contributors or found_new_pids) and
-            application_class_v_attribute and
-            application_class_option
-        ):
-            application_class_value = self.create_value(
-                application_class_v_attribute,
-                option = application_class_option
-            )
+        if (found_new_contributors or found_new_pids) and application_class_v_attribute and application_class_option:
+            application_class_value = self.create_value(application_class_v_attribute, option=application_class_option)
             import_values = self.merge_application_class([application_class_value], import_values)
 
         return import_values
@@ -1314,7 +1254,6 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         codemeta_content = get_codemeta(url, headers)
         codemeta_data = json.loads(codemeta_content)
-
 
         if 'name' in codemeta_data:
             title_value = self.get_title(codemeta_data, 'name')
@@ -1338,23 +1277,18 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             if len(pid_values) > 0:
                 import_values, found_new_pids = self.merge_pids(pid_values, import_values)
 
-        application_class_v_attribute = self.check_attribute('https://rdmorganiser.github.io/terms/domain/smp/application-class')
+        application_class_v_attribute = self.check_attribute(
+            'https://rdmorganiser.github.io/terms/domain/smp/application-class'
+        )
         application_class_option_uri = (
-                'https://rdmorganiser.github.io/terms/options/application-class/2'
-                if found_new_contributors
-                else 'https://rdmorganiser.github.io/terms/options/application-class/1'
-            )
+            'https://rdmorganiser.github.io/terms/options/application-class/2'
+            if found_new_contributors
+            else 'https://rdmorganiser.github.io/terms/options/application-class/1'
+        )
         application_class_option = self.get_option(application_class_option_uri)
 
-        if (
-            (found_new_contributors or found_new_pids) and
-            application_class_v_attribute and
-            application_class_option
-        ):
-            application_class_value = self.create_value(
-                application_class_v_attribute,
-                option = application_class_option
-            )
+        if (found_new_contributors or found_new_pids) and application_class_v_attribute and application_class_option:
+            application_class_value = self.create_value(application_class_v_attribute, option=application_class_option)
             import_values = self.merge_application_class([application_class_value], import_values)
 
         return import_values
@@ -1375,38 +1309,26 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         dependencies_attribute = self.check_attribute(self.metadata_attr_mapping.get('dependencies'))
         if dependencies and dependencies_attribute:
-            dependencies_value = self.create_value(
-                dependencies_attribute,
-                text=dependencies
-            )
+            dependencies_value = self.create_value(dependencies_attribute, text=dependencies)
             import_values = self.merge_dependencies([dependencies_value], import_values)
 
         dependency_licenses_attribute = self.check_attribute(self.metadata_attr_mapping.get('dependency_licenses'))
         if dependency_licenses and dependency_licenses_attribute:
-            dependency_licenses_value = self.create_value(
-                dependency_licenses_attribute,
-                text=dependency_licenses
-            )
+            dependency_licenses_value = self.create_value(dependency_licenses_attribute, text=dependency_licenses)
             import_values = self.merge_dependency_licenses([dependency_licenses_value], import_values)
 
-        application_class_v_attribute = self.check_attribute('https://rdmorganiser.github.io/terms/domain/smp/application-class')
+        application_class_v_attribute = self.check_attribute(
+            'https://rdmorganiser.github.io/terms/domain/smp/application-class'
+        )
         application_class_option_uri = (
             'https://rdmorganiser.github.io/terms/options/application-class/2'
             if dependency_licenses
             else 'https://rdmorganiser.github.io/terms/options/application-class/1'
         )
         application_class_option = self.get_option(application_class_option_uri)
-        if (
-            (dependencies or dependency_licenses) and
-            application_class_v_attribute and
-            application_class_option
-        ):
-            application_class_value = self.create_value(
-                application_class_v_attribute,
-                option = application_class_option
-            )
+        if (dependencies or dependency_licenses) and application_class_v_attribute and application_class_option:
+            application_class_value = self.create_value(application_class_v_attribute, option=application_class_option)
             import_values = self.merge_application_class([application_class_value], import_values)
-
 
         return import_values
 
@@ -1417,17 +1339,14 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         v_attribute = self.check_attribute(self.metadata_attr_mapping.get('language'))
         if v_attribute and len(languages) > 0:
             for language in languages:
-                language_values.append(self.create_value(
-                    v_attribute,
-                    text=language
-                ))
+                language_values.append(self.create_value(v_attribute, text=language))
 
             import_values = self.merge_languages(language_values, import_values)
 
         return import_values
 
     def get_import_values(self, headers, request_urls):
-        '''Return a list with Value() instances to create an xml with all the info from the selected repository. '''
+        """Return a list with Value() instances to create an xml with all the info from the selected repository."""
 
         import_values = []
         for import_option_key, import_option_url in request_urls.items():
@@ -1440,7 +1359,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             # external id marks values used by option providers
             return e.external_id
 
-        import_values.sort(key = sort_by_external_id)
+        import_values.sort(key=sort_by_external_id)
 
         return import_values
 
@@ -1457,21 +1376,19 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         raise NotImplementedError
 
     def create_import_project(self, headers, xml_url, default_title):
-        '''Return a Project() instance that will be the basis to create an xml
+        """Return a Project() instance that will be the basis to create an xml
         with all the info from the selected repository.
 
         If the user fills out the path to an RDMO xml file (optional), the Project() instance will have its
         information. If no file path is filled out, the Project() instance will be created from scratch.
-        '''
+        """
 
         catalog = (
-            self.current_project.catalog if self.current_project
+            self.current_project.catalog
+            if self.current_project
             else Catalog.objects.get(uri='https://rdmorganiser.github.io/terms/questions/smp')
         )
-        import_project = Project(
-            catalog=catalog,
-            title=default_title
-        )
+        import_project = Project(catalog=catalog, title=default_title)
         xml_import_plugin = None
 
         if xml_url:
@@ -1490,10 +1407,10 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                         import_project = (
                             xml_import_plugin.project
                             if xml_import_plugin.project
-                            else Project( # new Project() because xml_import_plugin.project is None
+                            else Project(  # new Project() because xml_import_plugin.project is None
                                 # xml_import_plugin.catalog == self.current_project.catalog
                                 catalog=xml_import_plugin.catalog,
-                                title='bla' # does not matter since updating existing project
+                                title='bla',  # does not matter since updating existing project
                             )
                         )
                     except ValidationError:
@@ -1506,28 +1423,23 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         self.xml_import_plugin = xml_import_plugin
 
     def create_import_xml_file(self, request, import_values, request_urls):
-        '''Return the xml_reponse of the temp_project created with the imported information from the repository.
+        """Return the xml_response of the temp_project created with the imported information from the repository.
 
         This xml_response will be processed and passed to either project_update_import or project_create_import,
         which are RDMO import views to either update or create projects from xml imports.
 
-        '''
+        """
 
         # If Value() for title (title_value) exists and title_value != self.import_project.title,
         # update self.import_project.title if first import source was NOT xml
         title = next(
-            (v.text for v in import_values
-             if v.attribute.uri == self.metadata_attr_mapping.get('title')),
-            None
+            (v.text for v in import_values if v.attribute.uri == self.metadata_attr_mapping.get('title')), None
         )
         first_import_source = next(iter(request_urls.keys()))
         if title and title != self.import_project.title and first_import_source != 'xml':
             self.import_project.title = title
 
-        checked = [
-            f'{v.attribute.uri}[{v.set_prefix}][{v.set_index}][{v.collection_index}]'
-            for v in import_values
-        ]
+        checked = [f'{v.attribute.uri}[{v.set_prefix}][{v.set_index}][{v.collection_index}]' for v in import_values]
 
         snapshots = self.xml_import_plugin.snapshots if self.xml_import_plugin else []
         self.update_values(None, self.import_project.catalog, import_values, snapshots)
