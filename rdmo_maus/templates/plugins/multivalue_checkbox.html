@@ -3,10 +3,9 @@
 <div class="checkbox custom-checkbox" >
     {% if sortable %}
         <div
-            class="drag-icon fa fa-arrows drag"
+            class="drag-icon fa fa-arrows drag custom-checkbox-drag"
             id="{{ field_id }}_drag_icon_{{ index }}"
-            style="display: {% if widget.selected %}flex{% else %}none{% endif %};"
-            {% if widget.selected %}draggable="true"{% endif %}
+            draggable="true"
         ></div>
     {% endif %}
     <label class="multivalue-checkbox" >

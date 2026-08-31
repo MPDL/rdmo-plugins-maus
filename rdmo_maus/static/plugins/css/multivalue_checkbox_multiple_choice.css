@@ -37,6 +37,10 @@
   cursor: move;
 }
 
+.custom-checkbox-drag {
+  display: flex;
+}
+
 .multivalue-checkbox {
   flex-grow: 1;
   display: flex;
