@@ -10,7 +10,13 @@ This repo implements five plugins for Software Management Plan (SMP) projects in
 
 This repo also implements two mixin classes (SMPExportMixin, SMPRepoImportMixin), which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins) or [import plugins](https://rdmo.readthedocs.io/en/latest/plugins/index.html#project-import-plugins). These classes offer SMP-specific export and import options. An example implementation for an export plugin is the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py), and for an import plugin: [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py)
 
-Furthermore, you will find a custom field "MultivalueCheckboxMultipleChoiceField" that displays choices similar to django's MultipleChoiceField with a CheckboxSelectMultiple widget. The difference to the built-in field is, that you can optionally have an extra text field for each choice, in case you need further text input. With this custom field you can also sort selected choices. For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plugins-maus/tree/main/rdmo_maus/forms/custom_fields.py) and for example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) and [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
+Furthermore, you will find two custom fields with their respective custom widgets. 
+- MultivalueCheckboxMultipleChoiceField
+- ChoiceFieldWithOther
+
+The first custom field is "MultivalueCheckboxMultipleChoiceField" and displays choices similar to django's MultipleChoiceField with a CheckboxSelectMultiple widget. The difference to the built-in field is, that you can optionally have an extra text field for each choice, in case you need further text input. With this custom field you can also sort selected choices. For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plugins-maus/tree/main/rdmo_maus/forms/custom_fields.py) and for example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) and [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
+
+The second custom field is "ChoiceFieldWithOther" and displays choices as radio buttons. It includes a last "other" choice with an input text field for free user input. For example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) or the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/blob/dev/rdmo_gitlab/providers/exports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
 
 
 ## Setup
@@ -71,6 +77,35 @@ For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plug
                 choices=[
                     ('True,value-text-field', ('checkbox-label', 'text-label'), 'choice-1'),
                     ('False', 'single-checkbox-label', 'choice-2')
+                ]
+            )
+        ```
+
+3. Include form.media in your form template:
+
+        ```html
+        <head>
+        ...
+
+        {{ form.media }}
+
+        </head>
+        ```
+
+### Custom field "ChoiceFieldWithOther"
+
+For example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) or the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/blob/dev/rdmo_gitlab/providers/exports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
+
+1. Import the field in your form with `from rdmo_maus.forms.custom_fields import ChoiceFieldWithOther`
+
+2. Define one of your fields with this custom field:
+
+        ```python
+        my_radio_buttons = ChoiceFieldWithOther(
+                label='My Radio Button Choices with Other',
+                choices=[
+                    ('choice-1', 'Choice 1'),
+                    ('choice-2', 'Choice 2')
                 ]
             )
         ```
