@@ -1,8 +1,41 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.choices import normalize_choices
 from django.utils.translation import gettext_lazy as _
 
-from .widgets import MultivalueCheckboxMultipleChoiceWidget, MultivalueCheckboxWidget
+from .widgets import MultivalueCheckboxMultipleChoiceWidget, MultivalueCheckboxWidget, RadioSelectWithOther
+
+
+class ChoiceFieldWithOther(forms.ChoiceField):
+    widget = RadioSelectWithOther
+
+    @property
+    def choices(self):
+        return self._choices
+
+    @choices.setter
+    def choices(self, value):
+        normalized_choices = normalize_choices(value)
+
+        if 'other' not in [label for (_value, label) in normalized_choices]:
+            normalized_choices.append(('', 'other'))
+
+        self._choices = self.widget.choices = normalized_choices
+
+    def valid_value(self, value):
+        """Check to see if the provided value is a valid choice."""
+
+        text_value = str(value)
+        for k, v in self.widget.choices:  # choice updates from widget too slow, so use widget choices instead
+            if isinstance(v, (list, tuple)):
+                # This is an optgroup, so look inside the group for options
+                for k2, _v2 in v:
+                    if value == k2 or text_value == str(k2):
+                        return True
+            else:
+                if value == k or text_value == str(k):
+                    return True
+        return False
 
 
 class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
