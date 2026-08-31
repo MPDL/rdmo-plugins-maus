@@ -1,0 +1,15 @@
+<div class="radio">
+    <label class="radio-with-other" >
+        {% with radio=widget.subwidgets.0 text=widget.subwidgets.1 %}
+            {% if text %}
+                <span class="radio-other-option" >
+                    {% include "django/forms/widgets/input.html" with widget=radio %}
+                    {% include "django/forms/widgets/input.html" with widget=text %}
+                </span>
+            {% else %}
+                {% include "django/forms/widgets/input.html" with widget=radio %}
+                {{ radio.label }}
+            {% endif %}
+        {% endwith %}
+    </label>
+</div>

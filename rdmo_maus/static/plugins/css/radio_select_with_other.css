@@ -1,0 +1,7 @@
+.radio-with-other {
+  display: flex;
+}
+
+.radio-other-option {
+  width: 60%;
+}

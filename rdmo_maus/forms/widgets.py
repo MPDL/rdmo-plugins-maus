@@ -4,6 +4,81 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 
+class RadioSelectWithOther(forms.RadioSelect):
+    option_template_name = 'plugins/radio_option_with_other.html'
+    template_name = 'plugins/radio_select_with_other.html'
+
+    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
+        index = str(index) if subindex is None else f'{index}_{subindex}'
+        option_attrs = self.build_attrs(self.attrs, attrs) if self.option_inherits_attrs else {}
+
+        selected = selected if value != '' else False
+        if selected:
+            option_attrs.update(self.checked_attribute)
+        if 'id' in option_attrs:
+            radio_id = '{id_prefix}_{id_index}'.format(id_prefix=f'{option_attrs["id"]}_radio', id_index=index)
+            text_id = '{id_prefix}_{id_index}'.format(id_prefix=f'{option_attrs["id"]}_text', id_index=index)
+
+        radio_attrs = {**{k: v for k, v in option_attrs.items() if k != 'class'}, 'id': radio_id}
+
+        if label == 'other':
+            text_attrs = {**option_attrs, 'id': text_id, 'oninput': 'selectRadioOption(this)'}
+            subwidgets = [
+                {
+                    'name': f'{name}_radio',
+                    'value': value,
+                    'label': label,
+                    'selected': selected,
+                    'attrs': radio_attrs,
+                    'type': self.input_type,
+                    'wrap_label': True,
+                },
+                {
+                    'name': f'{name}_text',
+                    'value': value,
+                    'attrs': text_attrs,
+                    'type': 'text',
+                    'wrap_label': False,
+                },
+            ]
+        else:
+            subwidgets = [
+                {
+                    'name': f'{name}_radio',
+                    'value': value,
+                    'label': label,
+                    'selected': selected,
+                    'attrs': radio_attrs,
+                    'type': self.input_type,
+                    'wrap_label': True,
+                },
+            ]
+
+        option = {'template_name': self.option_template_name, 'index': index, 'subwidgets': subwidgets}
+
+        return option
+
+    def value_from_datadict(self, data, files, name):
+        getter = data.get
+        if self.allow_multiple_selected:
+            try:
+                getter = data.getlist
+            except AttributeError:
+                pass
+
+        value = getter(f'{name}_radio') if getter(f'{name}_text') == '' else getter(f'{name}_text')
+
+        if getter(f'{name}_text') != '':
+            new_choices = [*self._choices[:-1], (value, 'other')]
+            self.choices = new_choices
+
+        return value
+
+    class Media:
+        css = {'all': [static('plugins/css/radio_select_with_other.css')]}
+        js = [format_html('<script src="{}" defer></script>', static('plugins/js/radio_select_with_other.js'))]
+
+
 class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     """
     A multiple choice widget with multivalue checkboxes as choices.
