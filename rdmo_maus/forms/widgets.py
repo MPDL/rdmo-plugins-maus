@@ -192,7 +192,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     errors = {}
     option_template_name = 'plugins/multivalue_checkbox.html'
     template_name = 'plugins/multivalue_checkbox_multiple_choice.html'
-    select_all_choice = ('False', _('Select all'), 'select_all_choice')
+    select_all_choice = ('True', _('Select all'), 'select_all_choice')
 
     _choice_keys = []
     _choice_widgets = {}
@@ -245,6 +245,12 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         if self.include_select_all_choice and (
             first_choice is not None and first_choice[2] != self.select_all_choice[2]
         ):
+            initially_selected = [c[0].split(',') for c in new_choices if c[0].split(',')[0].strip().lower() == 'true']
+            self.select_all_choice = (
+                ('True', _('Select all'), 'select_all_choice')
+                if len(initially_selected) == len(new_choices)
+                else ('False', _('Select all'), 'select_all_choice')
+            )
             new_choices = [self.select_all_choice, *new_choices]
         self._choices = new_choices
         self.choice_widgets = new_choices
@@ -327,8 +333,10 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
             choice_widget = self.choice_widgets[option_key]
             decompressed_option_value = choice_widget.decompress(option_value)
 
-            selected = self.allow_multiple_selected and decompressed_option_value[0]
-
+            # selected defined by user selection after interaction, initial values are given by self.choices
+            selected = (
+                option_key in selected_option_keys if len(selected_option_keys) > 0 else decompressed_option_value[0]
+            )
             option_name = f'{name}_{option_key}'
 
             if self.include_select_all_choice:
@@ -405,15 +413,23 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
             self.choice_keys, self.choices = self.sort_choices(data, name)
 
         value = []
-        for multiwidget_name in self.choice_keys:
+        new_choices = []
+        for i, multiwidget_name in enumerate(self.choice_keys):
             choice_widget = self.choice_widgets[multiwidget_name]
             multiwidget_value = choice_widget.value_from_datadict(data, files, f'{name}_{multiwidget_name}')
-
             if multiwidget_value[0]:
                 choice_value = (
                     multiwidget_name if len(multiwidget_value) == 1 else f'{multiwidget_name},{multiwidget_value[1]}'
                 )
                 value.append(choice_value)
+
+            # update choice values
+            new_choice_values = ','.join([str(v) for v in multiwidget_value])
+            (_choice_values, choice_labels, choice_key) = self.choices[i]
+            if choice_key == multiwidget_name:
+                new_choices.append((new_choice_values, choice_labels, choice_key))
+
+        self.choices = new_choices
 
         return value
 
@@ -443,10 +459,10 @@ class MultivalueCheckboxWidget(forms.MultiWidget):
         - a boolean value for the checkbox
         - (optionally) a string value for the text
         """
-        boolean_value = {'False': False, 'True': True}
+        boolean_value = {'false': False, 'true': True}
         if isinstance(value, str):
             split_value = value.split(',')
-            split_value[0] = boolean_value[split_value[0]]
+            split_value[0] = boolean_value[split_value[0].strip().lower()]
             return split_value
 
         return [False, '']
