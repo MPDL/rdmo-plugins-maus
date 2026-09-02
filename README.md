@@ -10,7 +10,7 @@ This repo implements five plugins for Software Management Plan (SMP) projects in
 
 This repo also implements two mixin classes (SMPExportMixin, SMPRepoImportMixin), which can be used by other [export plugins](https://rdmo.readthedocs.io/en/latest/plugins/#project-export-plugins) or [import plugins](https://rdmo.readthedocs.io/en/latest/plugins/index.html#project-import-plugins). These classes offer SMP-specific export and import options. An example implementation for an export plugin is the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py), and for an import plugin: [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py)
 
-Furthermore, you will find two custom fields with their respective custom widgets. 
+Furthermore, you will find two custom fields with their respective custom widgets.
 - MultivalueCheckboxMultipleChoiceField
 - ChoiceFieldWithOther
 
