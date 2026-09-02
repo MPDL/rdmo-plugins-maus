@@ -194,7 +194,16 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
 
     @choices.setter
     def choices(self, new_choices):
-        if self.include_select_all_choice:
+        first_choice = new_choices[0] if len(new_choices) > 0 else None
+        if self.include_select_all_choice and (
+            first_choice is not None and first_choice[2] != self.select_all_choice[2]
+        ):
+            initially_selected = [c[0].split(',') for c in new_choices if c[0].split(',')[0].strip().lower() == 'true']
+            self.select_all_choice = (
+                ('True', _('Select all'), 'select_all_choice')
+                if len(initially_selected) == len(new_choices)
+                else ('False', _('Select all'), 'select_all_choice')
+            )
             new_choices = [self.select_all_choice, *new_choices]
         self._choices = self.widget.choices = new_choices
         self.choice_fields = new_choices
