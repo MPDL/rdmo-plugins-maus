@@ -1,7 +1,4 @@
 {% with field_id=widget.attrs.id %}
-    {% if widget.select_all_option %}
-        {% include widget.select_all_option.template_name with widget=widget.select_all_option index=widget.select_all_option.index %}
-    {% endif %}
     {% if widget.sortable %}
         <div id="selected_{{ field_id }}" class="droppable" >
             {% for option in widget.optgroups %}

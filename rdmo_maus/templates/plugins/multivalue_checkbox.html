@@ -1,31 +1,35 @@
 {% load i18n %}
 
-<div class="form-inline checkbox custom-checkbox" >
-    {% if sortable %}
-        <div
-            class="drag-icon fa fa-arrows drag custom-checkbox-drag"
-            id="{{ field_id }}_drag_icon_{{ index }}"
-            draggable="true"
-        ></div>
-    {% endif %}
-    <label class="multivalue-checkbox" >
-        {% with checkbox=widget.subwidgets.0 text=widget.subwidgets.1 %}
-            <span class="multivalue-checkbox-checkbox" >
-                {% include "django/forms/widgets/input.html" with widget=checkbox %}
-                {{ checkbox.label }}
-            </span>
-            {% if text %}
-                <span
-                    id="{{ field_id }}_file_path_{{ index }}"
-                    class="multivalue-checkbox-text"
-                    style="display: {% if widget.selected %}flex{% else %}none{% endif %};"
-                >
-                    {{ text.label }}
-                    {% include "django/forms/widgets/input.html" with widget=text %}
-                </span>
+<div class="checkbox custom-checkbox" >
+    {% with checkbox=widget.subwidgets.0 text=widget.subwidgets.1 %}
+        {% if widget.key == 'select_all_choice' %}
+            {% include "plugins/multivalue_checkbox_select_all_choice.html" with checkbox=checkbox sortable=sortable %}
+        {% else %}
+            {% if sortable %}
+                <div
+                    class="drag-icon fa fa-arrows drag"
+                    id="{{ field_id }}_drag_icon_{{ index }}"
+                    draggable="true"
+                ></div>
             {% endif %}
-        {% endwith %}
-    </label>
+            <label class="multivalue-checkbox" for="{{ checkbox.attrs.id }}" >
+                <span class="multivalue-checkbox-checkbox" >
+                    {% include "django/forms/widgets/input.html" with widget=checkbox %}
+                    {{ checkbox.label }}
+                </span>
+                {% if text %}
+                    <span
+                        id="{{ field_id }}_file_path_{{ index }}"
+                        class="multivalue-checkbox-text"
+                        style="display: {% if widget.selected %}flex{% else %}none{% endif %};"
+                    >
+                        {{ text.label }}
+                        {% include "django/forms/widgets/input.html" with widget=text %}
+                    </span>
+                {% endif %}
+            </label>
+        {% endif %}
+    {% endwith %}
 </div>
 {% if widget.warnings %}
     <div id="{{ field_id }}_warnings_{{ index }}" class="help-block error" >

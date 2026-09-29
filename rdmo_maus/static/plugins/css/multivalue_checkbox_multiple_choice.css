@@ -1,12 +1,6 @@
 .droppable {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: #f4f4f4;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
-  padding: 10px;
-  border-radius: 4px;
-  width: 100%;
 }
 
 .choice-block {
@@ -19,24 +13,7 @@
 }
 
 .droppable .checkbox {
-  width: 100%;
   align-items: center;
-  display: flex;
-  gap: 5px;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 5px;
-  background: white;
-  color: black;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15);
-  border-radius: 4px;
-}
-
-.droppable .checkbox .drag-icon {
-  cursor: move;
-}
-
-.custom-checkbox-drag {
   display: flex;
 }
 
@@ -52,44 +29,67 @@
   align-items: center;
 }
 
+.multivalue-checkbox-checkbox input[type="checkbox"] {
+    margin-top: 0 !important;
+  }
+
 .multivalue-checkbox-text {
   width: 60%;
   align-items: center;
   gap: 1rem;
-}
-
-.multivalue-checkbox-text-input {
-  flex-grow:1;
+  white-space: nowrap;
 }
 
 .is-dragging {
   scale: 1.05;
 }
 
-.drag-icon {
-  color: #00387d;
+.drag-icon,
+.select-all-checkbox-slot {
   width: 5%;
-  height: 34px;
+  height: 40px;
   align-items: center;
   justify-content: center;
+  display: flex;
 
   @media (max-width: 600px) {
     width: 10%;
   }
 }
 
+.drag-icon {
+  cursor: move;
+  color: #00387d;
+}
+
+.select-all-checkbox-slot input[type="checkbox"] {
+  margin: 0;
+}
+
+.select-all-label {
+  padding-left: 0 !important;
+}
+
 @media (max-width: 500px) {
   .multivalue-checkbox {
     flex-direction: column;
-    align-items: start;
   }
 
   .multivalue-checkbox-text {
     width: 100%;
   }
 
+  .multivalue-checkbox-checkbox {
+    gap: 0.5rem;
+  }
+
   .droppable .multivalue-checkbox {
     padding-left: 0;
+  }
+
+  /* keep the drag icon level with the checkbox row instead of the whole stacked column */
+  .droppable .checkbox {
+    align-items: flex-start;
   }
 
   .droppable .checkbox input[type="checkbox"] {

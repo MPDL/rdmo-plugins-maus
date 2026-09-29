@@ -200,7 +200,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     select_all_choice_attributes = {'checkbox': {'onchange': 'toggleAllChoices(this)'}}
     default_choice_attributes = {
         'checkbox': {'onchange': 'toggleChoiceAttributesVisibility(this)'},
-        'text': {'oninput': 'hideChoiceWarningMessages(this)', 'class': 'form-control multivalue-checkbox-text-input'},
+        'text': {'oninput': 'hideChoiceWarningMessages(this)', 'class': 'form-control'},
     }
 
     def __init__(
@@ -399,6 +399,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
 
         return {
             'name': name,
+            'key': key,
             'index': index,
             'value': value,
             'errors': option_errors,
@@ -436,11 +437,6 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
         context['widget']['sortable'] = self.sortable
-
-        if self.include_select_all_choice:
-            widget_optgroups = context['widget']['optgroups']
-            context['widget']['select_all_option'] = widget_optgroups[0]
-            context['widget']['optgroups'] = widget_optgroups[1:]
 
         return context
 
