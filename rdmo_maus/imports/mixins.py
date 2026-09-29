@@ -1390,7 +1390,11 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         catalog = (
             self.current_project.catalog
             if self.current_project
-            else Catalog.objects.get(uri='https://rdmorganiser.github.io/terms/questions/smp')
+            else (
+                Catalog.objects.get(uri='https://rdmorganiser.github.io/terms/questions/smp')
+                if len(self.self.smp_import_choices) > 0  # i.e. if smp catalog is available
+                else Catalog.objects.filter_for_user(self.request.user).first() # first catalog available
+            )
         )
         import_project = Project(catalog=catalog, title=default_title)
         xml_import_plugin = None
