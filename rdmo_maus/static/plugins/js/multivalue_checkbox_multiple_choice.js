@@ -66,10 +66,6 @@ function toggleChoiceAttributesVisibility(checkbox) {
     errorMessages.style.display = checkbox.checked ? 'block' : 'none'
   }
 
-  if (droppable && !checkbox.checked) {
-    const choiceBlock = document.getElementById(`${fieldId}_choice_block_${index}`)
-    droppable.appendChild(choiceBlock)
-  }
 }
 
 function hideChoiceWarningMessages(text) {
