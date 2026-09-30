@@ -1,6 +1,7 @@
 .droppable {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
 .choice-block {
@@ -12,9 +13,15 @@
   margin-bottom: 0 !important;
 }
 
-.droppable .checkbox {
+.droppable .custom-checkbox {
   align-items: center;
   display: flex;
+}
+
+.draggable-checkbox {
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  padding-right: 3px;
 }
 
 .multivalue-checkbox {
@@ -77,6 +84,7 @@
 
   .multivalue-checkbox-text {
     width: 100%;
+    margin-bottom: 3px;
   }
 
   .multivalue-checkbox-checkbox {
