@@ -66,9 +66,13 @@ class RadioSelectWithOther(forms.RadioSelect):
             except AttributeError:
                 pass
 
-        value = getter(f'{name}_radio') if getter(f'{name}_text') == '' else getter(f'{name}_text')
+        value = (
+            getter(f'{name}_radio') 
+            if (getter(f'{name}_text') is None or getter(f'{name}_text') == '')
+            else getter(f'{name}_text')
+        )
 
-        if getter(f'{name}_text') != '':
+        if getter(f'{name}_text') is not None and getter(f'{name}_text') != '':
             new_choices = [*self._choices[:-1], (value, 'other')]
             self.choices = new_choices
 

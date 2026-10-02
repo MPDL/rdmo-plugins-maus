@@ -9,6 +9,22 @@ from .widgets import MultivalueCheckboxMultipleChoiceWidget, MultivalueCheckboxW
 class ChoiceFieldWithOther(forms.ChoiceField):
     widget = RadioSelectWithOther
 
+    def __init__(self, *, include_other_choice=True, **kwargs):
+        self.include_other_choice = include_other_choice
+        super().__init__(**kwargs)
+
+    @property
+    def include_other_choice(self):
+        return self._include_other_choice
+
+    @include_other_choice.setter
+    def include_other_choice(self, value):
+        self._include_other_choice = value
+
+        if not value:
+            radio_choices = [(value, label) for (value, label) in self.choices if label != 'other']
+            self.choices = radio_choices
+
     @property
     def choices(self):
         return self._choices
@@ -17,7 +33,7 @@ class ChoiceFieldWithOther(forms.ChoiceField):
     def choices(self, value):
         normalized_choices = normalize_choices(value)
 
-        if 'other' not in [label for (_value, label) in normalized_choices]:
+        if self.include_other_choice and 'other' not in [label for (_value, label) in normalized_choices]:
             normalized_choices.append(('', 'other'))
 
         self._choices = self.widget.choices = normalized_choices
