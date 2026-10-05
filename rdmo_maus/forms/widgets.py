@@ -3,10 +3,39 @@ from django.templatetags.static import static
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from django.utils.choices import normalize_choices
 
 class RadioSelectWithOther(forms.RadioSelect):
     option_template_name = 'plugins/radio_option_with_other.html'
     template_name = 'plugins/radio_select_with_other.html'
+
+    @property
+    def include_other_choice(self):
+        return self._include_other_choice
+
+    @include_other_choice.setter
+    def include_other_choice(self, new_value):
+        self._include_other_choice = new_value
+
+        if not new_value:
+            radio_choices = [(value, label) for (value, label) in self.choices if label != 'other']
+            self.choices = radio_choices
+
+    @property
+    def choices(self):
+        return self._choices
+
+    @choices.setter
+    def choices(self, new_choices):
+        # for some reason, widget resets choice label to 'other, correct if include_other_choice == False
+        if not self.include_other_choice and 'other' in [label for (_value, label) in normalize_choices(new_choices)]:
+            incorrect_other_choice = next((v, l) for (v, l) in normalize_choices(new_choices) if l == 'other')
+            correct_other_choice = (incorrect_other_choice[0], incorrect_other_choice[0])
+            correct_new_choices = [(v, l) for (v, l) in normalize_choices(new_choices) if l != 'other']
+            correct_new_choices.append(correct_other_choice)
+            new_choices = correct_new_choices
+        
+        self._choices = normalize_choices(new_choices)
 
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
         index = str(index) if subindex is None else f'{index}_{subindex}'

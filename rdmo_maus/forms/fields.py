@@ -18,10 +18,10 @@ class ChoiceFieldWithOther(forms.ChoiceField):
         return self._include_other_choice
 
     @include_other_choice.setter
-    def include_other_choice(self, value):
-        self._include_other_choice = value
+    def include_other_choice(self, new_value):
+        self._include_other_choice = self.widget.include_other_choice = new_value
 
-        if not value:
+        if not new_value:
             radio_choices = [(value, label) for (value, label) in self.choices if label != 'other']
             self.choices = radio_choices
 
@@ -30,8 +30,8 @@ class ChoiceFieldWithOther(forms.ChoiceField):
         return self._choices
 
     @choices.setter
-    def choices(self, value):
-        normalized_choices = normalize_choices(value)
+    def choices(self, new_choices):
+        normalized_choices = normalize_choices(new_choices)
 
         if self.include_other_choice and 'other' not in [label for (_value, label) in normalized_choices]:
             normalized_choices.append(('', 'other'))
