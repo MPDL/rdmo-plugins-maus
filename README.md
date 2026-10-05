@@ -16,7 +16,7 @@ Furthermore, you will find two custom fields with their respective custom widget
 
 The first custom field is "MultivalueCheckboxMultipleChoiceField" and displays choices similar to django's MultipleChoiceField with a CheckboxSelectMultiple widget. The difference to the built-in field is, that you can optionally have an extra text field for each choice, in case you need further text input. With this custom field you can also sort selected choices. For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plugins-maus/tree/main/rdmo_maus/forms/custom_fields.py) and for example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) and [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
 
-The second custom field is "ChoiceFieldWithOther" and displays choices as radio buttons. It includes a last "other" choice with an input text field for free user input. For example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) or the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/blob/dev/rdmo_gitlab/providers/exports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
+The second custom field is "ChoiceFieldWithOther" and displays choices as radio buttons. It includes a (default but optional) last "other" choice with an input text field for free user input. For example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) or the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/blob/dev/rdmo_gitlab/providers/exports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
 
 
 ## Setup
@@ -49,7 +49,7 @@ The second custom field is "ChoiceFieldWithOther" and displays choices as radio 
         ]
         ```
 
-4. For the README, CITATION, CodeMeta and SMP Report export plugins, import the views needed in your RDMO instance. The views are "view-smp-citation.xml", "view-smp-codemeta.xml", "view-smp-readme.xml" and "view-smp-report.xml" and can be found in our [forked rdmo-catalog](https://github.com/MPDL/rdmo-catalog/tree/MPG-catalogues/rdmorganiser/views).
+4. For the README, CITATION, CodeMeta and SMP Report export plugins, import the views needed in your RDMO instance. The views are "view-smp-citation.xml", "view-smp-codemeta.xml", "view-smp-readme.xml" and "view-smp-report.xml" and can be found in [rdmo-catalog](https://github.com/rdmorganiser/rdmo-catalog/tree/main/rdmorganiser/views).
 
 ## Usage
 
