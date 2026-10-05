@@ -6,6 +6,29 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.choices import normalize_choices
 
 class RadioSelectWithOther(forms.RadioSelect):
+    """
+    A radio button widget with a default, but optional "other" choice.
+
+    ###########
+    # CHOICES #
+    ###########
+
+    choices (list[tuple[str, str]] | tuple[tuple[str, str]]): a list/tuple of 2-item tuples: a value and a label.
+    Example choices:
+        choices = [
+            ('value1', 'Label 1'),
+            ('value2', 'Label 2'),
+        ]
+    
+    ########################
+    # INCLUDE_OTHER_CHOICE #
+    ########################
+
+    include_other_choice (bool): whether to include an "other" choice, i.e. a last choice for free text input. 
+    Defaults to True.
+
+    """
+
     option_template_name = 'plugins/radio_option_with_other.html'
     template_name = 'plugins/radio_select_with_other.html'
 

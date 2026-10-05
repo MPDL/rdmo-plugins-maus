@@ -7,6 +7,29 @@ from .widgets import MultivalueCheckboxMultipleChoiceWidget, MultivalueCheckboxW
 
 
 class ChoiceFieldWithOther(forms.ChoiceField):
+    """
+    A radio button field with a default, but optional "other" choice.
+
+    ###########
+    # CHOICES #
+    ###########
+
+    choices (list[tuple[str, str]] | tuple[tuple[str, str]]): a list/tuple of 2-item tuples: a value and a label.
+    Example choices:
+        choices = [
+            ('value1', 'Label 1'),
+            ('value2', 'Label 2'),
+        ]
+    
+    ########################
+    # INCLUDE_OTHER_CHOICE #
+    ########################
+
+    include_other_choice (bool): whether to include an "other" choice, i.e. a last choice for free text input. 
+    Defaults to True.
+
+    """
+    
     widget = RadioSelectWithOther
 
     def __init__(self, *, include_other_choice=True, **kwargs):
