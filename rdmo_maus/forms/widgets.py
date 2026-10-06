@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from django import forms
 from django.templatetags.static import static
 from django.utils.choices import normalize_choices
@@ -141,9 +143,10 @@ class RadioSelectWithOther(forms.RadioSelect):
         return value
 
     class Media:
-        def __init__(self):
-            self.css = {'all': [static('plugins/css/radio_select_with_other.css')]}
-            self.js = [format_html('<script src="{}" defer></script>', static('plugins/js/radio_select_with_other.js'))]
+        css: ClassVar[dict[str, list[str]]] = {'all': [static('plugins/css/radio_select_with_other.css')]}
+        js: ClassVar[list[str]] = [
+            format_html('<script src="{}" defer></script>', static('plugins/js/radio_select_with_other.js'))
+        ]
 
 
 class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
@@ -294,13 +297,10 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         super().__init__(**kwargs)
 
     class Media:
-        def __init__(self):
-            self.css = {'all': [static('plugins/css/multivalue_checkbox_multiple_choice.css')]}
-            self.js = [
-                format_html(
-                    '<script src="{}" defer></script>', static('plugins/js/multivalue_checkbox_multiple_choice.js')
-                )
-            ]
+        css: ClassVar[dict[str, list[str]]] = {'all': [static('plugins/css/multivalue_checkbox_multiple_choice.css')]}
+        js: ClassVar[list[str]] = [
+            format_html('<script src="{}" defer></script>', static('plugins/js/multivalue_checkbox_multiple_choice.js'))
+        ]
 
     @property
     def choices(self):
