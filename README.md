@@ -1,6 +1,6 @@
 # rdmo-plugins-maus
 
-This repo implements five plugins for Software Management Plan (SMP) projects in [RDMO](https://github.com/rdmorganiser/rdmo):
+This repo implements five plugins for Software Management Plan (SMP) projects in [RDMO](https://rdmorganiser.github.io/):
 
 * a README export plugin, which creates a README.md file with the data in an SMP project
 * a CITATION export plugin, which creates a CITATION.cff file with the data in an SMP project
@@ -14,7 +14,7 @@ Furthermore, you will find two custom fields with their respective custom widget
 - MultivalueCheckboxMultipleChoiceField
 - ChoiceFieldWithOther
 
-The first custom field is "MultivalueCheckboxMultipleChoiceField" and displays choices similar to django's MultipleChoiceField with a CheckboxSelectMultiple widget. The difference to the built-in field is, that you can optionally have an extra text field for each choice, in case you need further text input. With this custom field you can also sort selected choices. For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plugins-maus/tree/main/rdmo_maus/forms/custom_fields.py) and for example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) and [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
+The first custom field is "MultivalueCheckboxMultipleChoiceField" and displays choices similar to django's MultipleChoiceField with a CheckboxSelectMultiple widget. The difference to the built-in field is, that you can optionally have an extra text field for each choice, in case you need further text input. With this custom field you can also sort selected choices. For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plugins-maus/blob/main/rdmo_maus/forms/fields.py#L82) and for example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) and [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
 
 The second custom field is "ChoiceFieldWithOther" and displays choices as radio buttons. It includes a (default but optional) last "other" choice with an input text field for free user input. For example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) or the [GitLabExportProvider](https://github.com/MPDL/rdmo-plugins-gitlab/blob/dev/rdmo_gitlab/providers/exports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
 
@@ -63,7 +63,7 @@ This repo also implements two mixin classes (SMPExportMixin, SMPRepoImportMixin)
 
 ### Custom field "MultivalueCheckboxMultipleChoiceField"
 
-For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plugins-maus/tree/main/rdmo_maus/forms/custom_fields.py) and for example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) and [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
+For details, check out the [Field's docstring](https://github.com/MPDL/rdmo-plugins-maus/blob/main/rdmo_maus/forms/fields.py#L82) and for example implementations take a look at the [GitHubExportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/exports.py) and [GitHubImportProvider](https://github.com/MPDL/rdmo-plugins-github/blob/dev/rdmo_github/providers/imports.py) or try them out at our [demo RDMO instance](https://demo-rdmo.mpdl.mpg.de/).
 
 1. Import the field in your form with `from rdmo_maus.forms.custom_fields import MultivalueCheckboxMultipleChoiceField`
 
