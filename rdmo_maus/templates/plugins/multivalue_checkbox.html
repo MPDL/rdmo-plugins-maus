@@ -1,16 +1,13 @@
 {% load i18n %}
 
-<div 
+<div
     {% if widget.key == 'select_all_choice' or not sortable %}
         class="checkbox custom-checkbox"
     {% else %}
         class="checkbox custom-checkbox draggable-checkbox"
-    {% endif %} 
+    {% endif %}
 >
     {% with checkbox=widget.subwidgets.0 text=widget.subwidgets.1 %}
-        {% comment %} {% if widget.key == 'select_all_choice' %}
-            {% include "plugins/multivalue_checkbox_select_all_choice.html" with checkbox=checkbox sortable=sortable %}
-        {% else %} {% endcomment %}
             {% if sortable and widget.key != 'select_all_choice' %}
                 <div
                     class="drag-icon fa fa-arrows drag"
@@ -34,7 +31,6 @@
                     </span>
                 {% endif %}
             </label>
-        {% comment %} {% endif %} {% endcomment %}
     {% endwith %}
 </div>
 {% if widget.warnings %}

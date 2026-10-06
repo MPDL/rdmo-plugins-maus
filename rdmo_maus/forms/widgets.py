@@ -1,9 +1,9 @@
 from django import forms
 from django.templatetags.static import static
+from django.utils.choices import normalize_choices
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
-from django.utils.choices import normalize_choices
 
 class RadioSelectWithOther(forms.RadioSelect):
     """
@@ -19,12 +19,12 @@ class RadioSelectWithOther(forms.RadioSelect):
             ('value1', 'Label 1'),
             ('value2', 'Label 2'),
         ]
-    
+
     ########################
     # INCLUDE_OTHER_CHOICE #
     ########################
 
-    include_other_choice (bool): whether to include an "other" choice, i.e. a last choice for free text input. 
+    include_other_choice (bool): whether to include an "other" choice, i.e. a last choice for free text input.
     Defaults to True.
 
     """
@@ -41,7 +41,9 @@ class RadioSelectWithOther(forms.RadioSelect):
         self._include_other_choice = new_value
 
         if not new_value:
-            radio_choices = [(value, label) for (value, label) in self.choices if label != 'other']
+            radio_choices = [
+                (choice_value, choice_label) for (choice_value, choice_label) in self.choices if choice_label != 'other'
+            ]
             self.choices = radio_choices
 
     @property
@@ -52,12 +54,20 @@ class RadioSelectWithOther(forms.RadioSelect):
     def choices(self, new_choices):
         # for some reason, widget resets choice label to 'other, correct if include_other_choice == False
         if not self.include_other_choice and 'other' in [label for (_value, label) in normalize_choices(new_choices)]:
-            incorrect_other_choice = next((v, l) for (v, l) in normalize_choices(new_choices) if l == 'other')
+            incorrect_other_choice = next(
+                (choice_value, choice_label)
+                for (choice_value, choice_label) in normalize_choices(new_choices)
+                if choice_label == 'other'
+            )
             correct_other_choice = (incorrect_other_choice[0], incorrect_other_choice[0])
-            correct_new_choices = [(v, l) for (v, l) in normalize_choices(new_choices) if l != 'other']
+            correct_new_choices = [
+                (choice_value, choice_label)
+                for (choice_value, choice_label) in normalize_choices(new_choices)
+                if choice_label != 'other'
+            ]
             correct_new_choices.append(correct_other_choice)
             new_choices = correct_new_choices
-        
+
         self._choices = normalize_choices(new_choices)
 
     def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
@@ -119,7 +129,7 @@ class RadioSelectWithOther(forms.RadioSelect):
                 pass
 
         value = (
-            getter(f'{name}_radio') 
+            getter(f'{name}_radio')
             if (getter(f'{name}_text') is None or getter(f'{name}_text') == '')
             else getter(f'{name}_text')
         )
@@ -131,8 +141,9 @@ class RadioSelectWithOther(forms.RadioSelect):
         return value
 
     class Media:
-        css = {'all': [static('plugins/css/radio_select_with_other.css')]}
-        js = [format_html('<script src="{}" defer></script>', static('plugins/js/radio_select_with_other.js'))]
+        def __init__(self):
+            self.css = {'all': [static('plugins/css/radio_select_with_other.css')]}
+            self.js = [format_html('<script src="{}" defer></script>', static('plugins/js/radio_select_with_other.js'))]
 
 
 class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
@@ -245,19 +256,8 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
     """
 
     option_inherits_attrs = True
-    errors = {}
     option_template_name = 'plugins/multivalue_checkbox.html'
     template_name = 'plugins/multivalue_checkbox_multiple_choice.html'
-    select_all_choice = ('True', _('Select all'), 'select_all_choice')
-
-    _choice_keys = []
-    _choice_widgets = {}
-    _choice_attributes = {}
-    select_all_choice_attributes = {'checkbox': {'onchange': 'toggleAllChoices(this)'}}
-    default_choice_attributes = {
-        'checkbox': {'onchange': 'toggleChoiceAttributesVisibility(this)'},
-        'text': {'oninput': 'hideChoiceWarningMessages(this)', 'class': 'form-control'},
-    }
 
     def __init__(
         self, *, sortable=False, include_select_all_choice=False, choice_attributes=None, choice_warnings=None, **kwargs
@@ -278,6 +278,14 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         :param kwargs: rest of keyword arguments of django's SelectMultiple widget
         """
 
+        self.select_all_choice = ('True', _('Select all'), 'select_all_choice')
+        self.select_all_choice_attributes = {'checkbox': {'onchange': 'toggleAllChoices(this)'}}
+        self.default_choice_attributes = {
+            'checkbox': {'onchange': 'toggleChoiceAttributesVisibility(this)'},
+            'text': {'oninput': 'hideChoiceWarningMessages(this)', 'class': 'form-control'},
+        }
+        self.errors = {}
+
         self.include_select_all_choice = include_select_all_choice
         self.sortable = sortable
         self.choice_warnings = choice_warnings if isinstance(choice_warnings, dict) else {}
@@ -286,10 +294,13 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         super().__init__(**kwargs)
 
     class Media:
-        css = {'all': [static('plugins/css/multivalue_checkbox_multiple_choice.css')]}
-        js = [
-            format_html('<script src="{}" defer></script>', static('plugins/js/multivalue_checkbox_multiple_choice.js'))
-        ]
+        def __init__(self):
+            self.css = {'all': [static('plugins/css/multivalue_checkbox_multiple_choice.css')]}
+            self.js = [
+                format_html(
+                    '<script src="{}" defer></script>', static('plugins/js/multivalue_checkbox_multiple_choice.js')
+                )
+            ]
 
     @property
     def choices(self):

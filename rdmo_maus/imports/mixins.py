@@ -1,6 +1,7 @@
 import base64
 import json
 from functools import partial, reduce
+from typing import ClassVar
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
@@ -68,7 +69,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
     import_project = None
     xml_import_plugin = None
 
-    metadata_attr_mapping = {
+    metadata_attr_mapping: ClassVar[dict[str, str | dict[str, str]]] = {
         'license': 'https://rdmorganiser.github.io/terms/domain/smp/software-license',
         'language': 'https://rdmorganiser.github.io/terms/domain/smp/language',
         'dependencies': 'https://rdmorganiser.github.io/terms/domain/smp/external-components',
@@ -1393,7 +1394,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             else (
                 Catalog.objects.get(uri='https://rdmorganiser.github.io/terms/questions/smp')
                 if len(self.smp_import_choices) > 0  # i.e. if smp catalog is available
-                else Catalog.objects.filter_for_user(self.request.user).first() # first catalog available
+                else Catalog.objects.filter_for_user(self.request.user).first()  # first catalog available
             )
         )
         import_project = Project(catalog=catalog, title=default_title)

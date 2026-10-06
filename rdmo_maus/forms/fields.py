@@ -20,16 +20,16 @@ class ChoiceFieldWithOther(forms.ChoiceField):
             ('value1', 'Label 1'),
             ('value2', 'Label 2'),
         ]
-    
+
     ########################
     # INCLUDE_OTHER_CHOICE #
     ########################
 
-    include_other_choice (bool): whether to include an "other" choice, i.e. a last choice for free text input. 
+    include_other_choice (bool): whether to include an "other" choice, i.e. a last choice for free text input.
     Defaults to True.
 
     """
-    
+
     widget = RadioSelectWithOther
 
     def __init__(self, *, include_other_choice=True, **kwargs):
@@ -45,7 +45,9 @@ class ChoiceFieldWithOther(forms.ChoiceField):
         self._include_other_choice = self.widget.include_other_choice = new_value
 
         if not new_value:
-            radio_choices = [(value, label) for (value, label) in self.choices if label != 'other']
+            radio_choices = [
+                (choice_value, choice_label) for (choice_value, choice_label) in self.choices if choice_label != 'other'
+            ]
             self.choices = radio_choices
 
     @property
@@ -199,10 +201,6 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
 
     """
 
-    select_all_choice = ('True', _('Select all'), 'select_all_choice')
-    _choice_fields = {}
-    _choice_keys = []
-
     def __init__(self, *, include_select_all_choice=False, sortable=False, choice_validators=None, **kwargs):
         """
         MultivalueCheckboxMultipleChoiceField.__init__
@@ -217,6 +215,8 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
             Check out the class docstring for details.
         :param kwargs: rest of keyword arguments of django's MultipleChoiceField
         """
+
+        self.select_all_choice = ('True', _('Select all'), 'select_all_choice')
 
         self.include_select_all_choice = include_select_all_choice
         self.choice_validators = choice_validators if isinstance(choice_validators, dict) else {}
