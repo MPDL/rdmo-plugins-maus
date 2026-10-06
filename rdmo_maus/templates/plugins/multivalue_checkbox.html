@@ -8,29 +8,29 @@
     {% endif %}
 >
     {% with checkbox=widget.subwidgets.0 text=widget.subwidgets.1 %}
-            {% if sortable and widget.key != 'select_all_choice' %}
-                <div
-                    class="drag-icon fa fa-arrows drag"
-                    id="{{ field_id }}_drag_icon_{{ index }}"
-                    draggable="true"
-                ></div>
-            {% endif %}
-            <label class="multivalue-checkbox" for="{{ checkbox.attrs.id }}" >
-                <span class="multivalue-checkbox-checkbox" >
-                    {% include "django/forms/widgets/input.html" with widget=checkbox %}
-                    {{ checkbox.label }}
+        {% if sortable and widget.key != 'select_all_choice' %}
+            <div
+                class="drag-icon fa fa-arrows drag"
+                id="{{ field_id }}_drag_icon_{{ index }}"
+                draggable="true"
+            ></div>
+        {% endif %}
+        <label class="multivalue-checkbox" for="{{ checkbox.attrs.id }}" >
+            <span class="multivalue-checkbox-checkbox" >
+                {% include "django/forms/widgets/input.html" with widget=checkbox %}
+                {{ checkbox.label }}
+            </span>
+            {% if text %}
+                <span
+                    id="{{ field_id }}_file_path_{{ index }}"
+                    class="multivalue-checkbox-text"
+                    style="display: {% if widget.selected %}flex{% else %}none{% endif %};"
+                >
+                    {{ text.label }}
+                    {% include "django/forms/widgets/input.html" with widget=text %}
                 </span>
-                {% if text %}
-                    <span
-                        id="{{ field_id }}_file_path_{{ index }}"
-                        class="multivalue-checkbox-text"
-                        style="display: {% if widget.selected %}flex{% else %}none{% endif %};"
-                    >
-                        {{ text.label }}
-                        {% include "django/forms/widgets/input.html" with widget=text %}
-                    </span>
-                {% endif %}
-            </label>
+            {% endif %}
+        </label>
     {% endwith %}
 </div>
 {% if widget.warnings %}
