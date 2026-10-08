@@ -174,7 +174,10 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         available_catalog_uris = [catalog.uri for catalog in Catalog.objects.filter_for_user(self.request.user)]
         smp_catalog_exists = smp_catalog_uri in available_catalog_uris
 
-        if (smp_catalog_exists and self.current_project is None) or self.current_project.catalog.uri == smp_catalog_uri:
+        if (
+            (self.current_project is None and smp_catalog_exists) or
+            (self.current_project is not None and self.current_project.catalog.uri == smp_catalog_uri)
+        ):
             smp_import_choices = {
                 'choices': [v.get('imports', {}).get('import_choice') for v in self.smp_import_map.values()],
                 'choice_validators': {
