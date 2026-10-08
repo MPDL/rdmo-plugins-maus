@@ -350,7 +350,7 @@ class MultivalueCheckboxMultipleChoiceField(forms.MultipleChoiceField):
             multivalue_list = multivalue.split(',')
             choice_key = multivalue_list[0]
             if len(multivalue_list) > 1:
-                text_value = multivalue_list[1]
+                text_value = ','.join(multivalue_list[1:])
 
             if choice_key in self.choice_keys:
                 choice_field = self.choice_fields.get(choice_key)

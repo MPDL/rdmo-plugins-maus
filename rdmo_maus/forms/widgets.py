@@ -387,7 +387,7 @@ class MultivalueCheckboxMultipleChoiceWidget(forms.SelectMultiple):
         for v in value:
             v_list = v.split(',')
             selected_option_keys.append(v_list[0])
-            transformed_v = f'True,{v_list[1]}' if len(v_list) > 1 else 'True'
+            transformed_v = f'True,{",".join(v_list[1:])}' if len(v_list) > 1 else 'True'
             transformed_value.append(transformed_v)
 
         current_errors = {k: v for k, v in self.errors.items() if k in selected_option_keys}
@@ -526,6 +526,11 @@ class MultivalueCheckboxWidget(forms.MultiWidget):
         if isinstance(value, str):
             split_value = value.split(',')
             split_value[0] = boolean_value[split_value[0].strip().lower()]
+
+            if len(split_value) > 1:
+                return_value = [split_value[0], ','.join(split_value[1:])]
+                split_value = return_value
+            
             return split_value
 
         return [False, '']
