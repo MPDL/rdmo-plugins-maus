@@ -530,7 +530,7 @@ class MultivalueCheckboxWidget(forms.MultiWidget):
             if len(split_value) > 1:
                 return_value = [split_value[0], ','.join(split_value[1:])]
                 split_value = return_value
-            
+
             return split_value
 
         return [False, '']
