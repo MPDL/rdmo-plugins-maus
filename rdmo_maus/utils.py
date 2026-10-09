@@ -89,7 +89,7 @@ def unzip(zip_buffer):
     return content_files
 
 
-def get_licenses(spdx_ids):
+def fetch_licenses(spdx_ids):
     # https://github.com/spdx/license-list-data
     license_contents = {}
     for id in spdx_ids:
@@ -131,7 +131,7 @@ def render_to_license(request, project, snapshot=None, choice=None):
         )
         spdx_ids = [spdx_id]
 
-    license_contents = get_licenses(spdx_ids)
+    license_contents = fetch_licenses(spdx_ids)
     if len(license_contents) == 1:
         content = next(iter(license_contents.values()))
         content_type = 'text/plain'

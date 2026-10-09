@@ -30,26 +30,34 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
     RDMO xml project files in projects with the Software Management Plan (SMP) catalogue.
 
     It requires plugins to implement the following methods, which take two arguments (url and headers):
-    - get_citation()
-    - get_license()
-    - get_sbom()
-    - get_languages()
+    - fetch_citation()
+    - fetch_codemeta()
+    - fetch_license()
+    - fetch_sbom()
+    - fetch_languages()
 
-    GET_CITATION():
+    FETCH_CITATION():
     Args:
     - url: url to a CITATION.cff file in the repository
     - headers: request authorization headers
 
     Returns the content of the CITATION.cff file (str) or None
 
-    GET_LICENSE():
+    FETCH_CODEMETA():
+        Args:
+        - url: url to a codemeta.json file in the repository
+        - headers: request authorization headers
+    
+        Returns the content of the codemeta.json file (str) or None
+
+    FETCH_LICENSE():
     Args:
     - url: repository's api endpoint with its license information
     - headers: request authorization headers
 
     Returns the spdx id of the repository's license (str) or None
 
-    GET_SBOM():
+    FETCH_SBOM():
     (sbom stands for software bill of materials)
     Args:
     - url: repository's api endpoint with its dependency information
@@ -57,7 +65,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
     Returns a dict with keys 'dependencies' and 'dependency_licenses', and values of type str or None
 
-    GET_LANGUAGES():
+    FETCH_LANGUAGES():
     Args:
     - url: repository's api endpoint with its languages
     - headers: request authorization headers
@@ -1371,16 +1379,19 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         return import_values
 
-    def get_citation(self, url, headers):
+    def fetch_citation(self, url, headers):
         raise NotImplementedError
 
-    def get_license(self, url, headers):
+    def fetch_codemeta(self, url, headers):
         raise NotImplementedError
 
-    def get_sbom(self, url, headers):
+    def fetch_license(self, url, headers):
         raise NotImplementedError
 
-    def get_languages(self, url, headers):
+    def fetch_sbom(self, url, headers):
+        raise NotImplementedError
+
+    def fetch_languages(self, url, headers):
         raise NotImplementedError
 
     def create_import_project(self, headers, xml_url, default_title):
