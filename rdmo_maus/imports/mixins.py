@@ -129,7 +129,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     },
                 },
                 'process_method': self.process_citation,
-                'process_method_kwargs': {'get_citation': self.get_citation},
+                'process_method_kwargs': {'fetch_citation': self.fetch_citation},
             },
             'codemeta': {
                 'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
@@ -142,7 +142,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     },
                 },
                 'process_method': self.process_codemeta,
-                'process_method_kwargs': {'get_codemeta': self.get_codemeta},
+                'process_method_kwargs': {'fetch_codemeta': self.fetch_codemeta},
             },
             'license': {
                 'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
@@ -151,7 +151,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     'import_choice_attributes': {},
                 },
                 'process_method': self.process_license,
-                'process_method_kwargs': {'get_license': self.get_license},
+                'process_method_kwargs': {'fetch_license': self.fetch_license},
             },
             'sbom': {
                 'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
@@ -160,7 +160,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     'import_choice_attributes': {},
                 },
                 'process_method': self.process_sbom,
-                'process_method_kwargs': {'get_sbom': self.get_sbom},
+                'process_method_kwargs': {'fetch_sbom': self.fetch_sbom},
             },
             'languages': {
                 'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
@@ -169,7 +169,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                     'import_choice_attributes': {},
                 },
                 'process_method': self.process_languages,
-                'process_method_kwargs': {'get_languages': self.get_languages},
+                'process_method_kwargs': {'fetch_languages': self.fetch_languages},
             },
         }
 
@@ -1221,10 +1221,10 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         return import_values
 
-    def process_citation(self, url, import_values, headers, get_citation):
+    def process_citation(self, url, import_values, headers, fetch_citation):
         # https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md
 
-        citation_content = get_citation(url, headers)
+        citation_content = fetch_citation(url, headers)
         cff_data = yaml.safe_load(citation_content) if citation_content else {}
 
         if 'title' in cff_data:
@@ -1265,10 +1265,10 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         return import_values
 
-    def process_codemeta(self, url, import_values, headers, get_codemeta):
+    def process_codemeta(self, url, import_values, headers, fetch_codemeta):
         # https://github.com/citation-file-format/citation-file-format/blob/main/schema-guide.md
 
-        codemeta_content = get_codemeta(url, headers)
+        codemeta_content = fetch_codemeta(url, headers)
         codemeta_data = json.loads(codemeta_content)
 
         if 'name' in codemeta_data:
@@ -1309,8 +1309,8 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         return import_values
 
-    def process_license(self, url, import_values, headers, get_license):
-        _id = get_license(url, headers)
+    def process_license(self, url, import_values, headers, fetch_license):
+        _id = fetch_license(url, headers)
 
         if _id:
             value = self.get_license_value(_id)
@@ -1319,8 +1319,8 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         return import_values
 
-    def process_sbom(self, url, import_values, headers, get_sbom):
-        sbom = get_sbom(url, headers)
+    def process_sbom(self, url, import_values, headers, fetch_sbom):
+        sbom = fetch_sbom(url, headers)
         dependencies, dependency_licenses = sbom.values()
 
         dependencies_attribute = self.check_attribute(self.metadata_attr_mapping.get('dependencies'))
@@ -1348,8 +1348,8 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         return import_values
 
-    def process_languages(self, url, import_values, headers, get_languages):
-        languages = get_languages(url, headers)
+    def process_languages(self, url, import_values, headers, fetch_languages):
+        languages = fetch_languages(url, headers)
 
         language_values = []
         v_attribute = self.check_attribute(self.metadata_attr_mapping.get('language'))
