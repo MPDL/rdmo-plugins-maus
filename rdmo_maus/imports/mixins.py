@@ -770,7 +770,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
     def get_license_option(self, license_optionset_uri, license_id):
         options = get_optionset_options(license_optionset_uri)
 
-        collection_index, option = next(((i, o) for i, o in enumerate(options) if o.text == license_id), (None, None))
+        collection_index, option = next(((i, o) for i, o in enumerate(options) if o.text.lower() == license_id.lower()), (None, None))
 
         if option is None:
             collection_index, option = next(
