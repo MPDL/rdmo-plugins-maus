@@ -20,7 +20,7 @@ from rdmo.projects.models.value import Value
 from rdmo.projects.utils import save_import_snapshot_values, save_import_tasks, save_import_values, save_import_views
 from rdmo.questions.models import Catalog
 
-from ..forms.validators import FilePathExtensionValidator
+from ..forms.validators import FilePathExtensionValidator, validate_import_file_path
 from ..utils import get_optionset_options, get_pages, get_questionsets, groupby_values
 
 
@@ -108,7 +108,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             'xml': {
                 'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'import_choice': ('True,data/smp.xml', ('RDMO XML', _('File path')), 'xml'),
-                    'import_choice_validators': {'text': [FilePathExtensionValidator('.xml')]},
+                    'import_choice_validators': {
+                        'text': [validate_import_file_path, FilePathExtensionValidator('.xml')]
+                    },
                     'import_choice_attributes': {
                         'text': {
                             'placeholder': _('example_folder/example_file_name.xml'),
@@ -121,7 +123,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             'citation': {
                 'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'import_choice': ('True,CITATION.cff', ('CITATION', _('File path')), 'citation'),
-                    'import_choice_validators': {'text': [FilePathExtensionValidator('.cff')]},
+                    'import_choice_validators': {
+                        'text': [validate_import_file_path, FilePathExtensionValidator('.cff')]
+                    },
                     'import_choice_attributes': {
                         'text': {
                             'placeholder': 'CITATION.cff',
@@ -134,7 +138,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             'codemeta': {
                 'imports': {  # check MultivalueCheckboxMultipleChoiceField in ..forms.fields.py for details
                     'import_choice': ('True,codemeta.json', ('CodeMeta', _('File path')), 'codemeta'),
-                    'import_choice_validators': {'text': [FilePathExtensionValidator('.json')]},
+                    'import_choice_validators': {
+                        'text': [validate_import_file_path, FilePathExtensionValidator('.json')]
+                    },
                     'import_choice_attributes': {
                         'text': {
                             'placeholder': 'codemeta.json',

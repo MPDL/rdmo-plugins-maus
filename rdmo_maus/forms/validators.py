@@ -5,7 +5,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
 
-def validate_text_field(field_name, value, min_length, max_length, not_allowed_pattern, allowed_char_name_str):
+def validate_text_field(field_name, value, min_length, max_length, not_allowed_pattern, allowed_char_name_str=None):
     errors = []
 
     matches = re.findall(not_allowed_pattern, value)
@@ -17,14 +17,16 @@ def validate_text_field(field_name, value, min_length, max_length, not_allowed_p
         except ValueError:
             pass
 
-        errors.append(
-            ValidationError(
-                _('{fn} contains special character(s): "{sc}". Allowed characters are: {acns}.').format(
-                    fn=field_name, sc='", "'.join(matches), acns=allowed_char_name_str
-                ),
-                code='invalid',
+        if allowed_char_name_str is None:
+            validation_error_message = _('{fn} contains special character(s): "{sc}".').format(
+                fn=field_name, sc='", "'.join(matches)
             )
-        )
+        else:
+            validation_error_message = _(
+                '{fn} contains special character(s): "{sc}". Allowed characters are: {acns}.'
+            ).format(fn=field_name, sc='", "'.join(matches), acns=allowed_char_name_str)
+
+        errors.append(ValidationError(validation_error_message, code='invalid'))
 
     if len(value) > max_length:
         errors.append(
@@ -58,6 +60,15 @@ def validate_file_path(value):
     allowed_char_name_str = _('alphanumeric, slash, hyphen, underscore, and period')
 
     return validate_text_field(field_name, value, min_length, max_length, not_allowed_pattern, allowed_char_name_str)
+
+
+def validate_import_file_path(value):
+    field_name = _('File path')
+    min_length = 6
+    max_length = 100
+    not_allowed_pattern = r'[,]'
+
+    return validate_text_field(field_name, value, min_length, max_length, not_allowed_pattern)
 
 
 @deconstructible
