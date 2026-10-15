@@ -84,20 +84,20 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
         'dependency_licenses': 'https://rdmorganiser.github.io/terms/domain/smp/third-party-licenses',
         'title': 'https://rdmorganiser.github.io/terms/domain/project/title',
         'contributor': {
-            'family-names': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/family-name',
-            'familyName': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/family-name',
-            'given-names': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/given-name',
-            'givenName': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/given-name',
-            'name': 'https://rdmorganiser.github.io/terms/domain/project/partner/name',
-            'orcid': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/orcid',
-            'website': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/website',
-            'affiliation': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/affiliation',
-            'id': 'https://rdmorganiser.github.io/terms/domain/project/partner/id',
-            'type': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/type',
-            'orcid-autocomplete': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/orcid-autocomplete',
-            'role': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/role',
-            'ror-id': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/affiliation/ror-id',
-            'ror-autocomplete': 'https://rdmo.mpdl.mpg.de/terms/domain/project/partner/affiliation/ror-autocomplete',
+            'family-names': 'https://rdmorganiser.github.io/terms/domain/project/contributor/family_name',
+            'familyName': 'https://rdmorganiser.github.io/terms/domain/project/contributor/family_name',
+            'given-names': 'https://rdmorganiser.github.io/terms/domain/project/contributor/given_name',
+            'givenName': 'https://rdmorganiser.github.io/terms/domain/project/contributor/given_name',
+            'name': 'https://rdmorganiser.github.io/terms/domain/project/contributor/name',
+            'orcid': 'https://rdmorganiser.github.io/terms/domain/project/contributor/orcid',
+            'website': 'https://rdmorganiser.github.io/terms/domain/project/contributor/organization/url',
+            'affiliation': 'https://rdmorganiser.github.io/terms/domain/project/contributor/organization',
+            'id': 'https://rdmorganiser.github.io/terms/domain/project/contributor/id',
+            'type': 'https://rdmorganiser.github.io/terms/domain/project/contributor/person_or_entity',
+            'orcid-autocomplete': 'https://rdmorganiser.github.io/terms/domain/project/contributor/orcid-autocomplete',
+            'role': 'https://rdmorganiser.github.io/terms/domain/project/contributor/role',
+            'ror-id': 'https://rdmorganiser.github.io/terms/domain/project/contributor/organization/ror',
+            'ror-autocomplete': 'https://rdmorganiser.github.io/terms/domain/project/contributor/organization/ror-autocomplete',
         },
         'pid': 'https://rdmorganiser.github.io/terms/domain/smp/software-pid',
     }
@@ -848,9 +848,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             # TYPE VALUE
             type_v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('type'))
             option_uri = (
-                'https://rdmo.mpdl.mpg.de/terms/options/partner-types/person'
+                'https://rdmorganiser.github.io/terms/options/partner-types/person'
                 if type == 'person'
-                else 'https://rdmo.mpdl.mpg.de/terms/options/partner-types/entity'
+                else 'https://rdmorganiser.github.io/terms/options/partner-types/entity'
             )
             type_v_option = self.get_option(option_uri)
             if type_v_attribute and type_v_option:
@@ -1014,9 +1014,9 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
             # TYPE VALUE
             type_v_attribute = self.check_attribute(self.metadata_attr_mapping.get('contributor', {}).get('type'))
             option_uri = (
-                'https://rdmo.mpdl.mpg.de/terms/options/partner-types/person'
+                'https://rdmorganiser.github.io/terms/options/partner-types/person'
                 if type == 'person'
-                else 'https://rdmo.mpdl.mpg.de/terms/options/partner-types/entity'
+                else 'https://rdmorganiser.github.io/terms/options/partner-types/entity'
             )
             type_v_option = self.get_option(option_uri)
             if type_v_attribute and type_v_option:

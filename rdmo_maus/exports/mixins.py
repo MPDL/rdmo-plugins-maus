@@ -53,7 +53,7 @@ class SMPExportMixin:
                 },
                 'render_function': render_from_view,
                 'render_function_kwargs': {
-                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-readme',
+                    'view_uri': 'https://rdmorganiser.github.io/terms/views/smp-readme',
                     'title': 'README.md',
                     'export_format': 'markdown',
                     'language_code': 'en',
@@ -71,7 +71,7 @@ class SMPExportMixin:
                 },
                 'render_function': render_from_view,
                 'render_function_kwargs': {
-                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-citation',
+                    'view_uri': 'https://rdmorganiser.github.io/terms/views/smp-citation',
                     'title': 'CITATION.cff',
                     'export_format': 'plain',
                     'language_code': 'en',
@@ -89,7 +89,7 @@ class SMPExportMixin:
                 },
                 'render_function': render_from_view,
                 'render_function_kwargs': {
-                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-codemeta',
+                    'view_uri': 'https://rdmorganiser.github.io/terms/views/smp-codemeta',
                     'title': 'codemeta.json',
                     'export_format': 'plain',
                     'language_code': 'en',
@@ -120,7 +120,7 @@ class SMPExportMixin:
                 },
                 'render_function': render_from_view,
                 'render_function_kwargs': {
-                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-report',
+                    'view_uri': 'https://rdmorganiser.github.io/terms/views/smp-report',
                     'title': 'smp_report.html',
                     'export_format': 'html',
                     'language_code': 'en',
@@ -141,7 +141,7 @@ class SMPExportMixin:
                 },
                 'render_function': render_from_view,
                 'render_function_kwargs': {
-                    'view_uri': 'https://rdmo.mpdl.mpg.de/terms/views/smp-report',
+                    'view_uri': 'https://rdmorganiser.github.io/terms/views/smp-report',
                     'title': 'smp_report.pdf',
                     'export_format': 'pdf',
                     'language_code': 'en',
