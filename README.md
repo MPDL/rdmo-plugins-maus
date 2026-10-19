@@ -120,3 +120,8 @@ For example implementations take a look at the [GitHubExportProvider](https://gi
 
         </head>
         ```
+
+Funding Acknowledgments
+-----
+
+This repository was created by [Max Planck Information and Technology](https://maxit.mpg.de) in the context of a project funded by the [Deutsche Forschungsgemeinschaft](https://www.dfg.de) (DFG, German Research Foundation) – Project number: [543616919](https://gepris.dfg.de/project/543616919).
