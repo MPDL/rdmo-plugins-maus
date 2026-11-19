@@ -1373,8 +1373,6 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         import_values = []
         for import_option_key, import_option_url in request_urls.items():
-            print(f'!!!!!!!!!!!!! {import_option_key}')
-
             _imports, process_method, process_method_kwargs = self.smp_import_map.get(import_option_key).values()
 
             import_values = process_method(import_option_url, import_values, headers, **process_method_kwargs)
