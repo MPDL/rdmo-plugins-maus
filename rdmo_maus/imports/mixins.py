@@ -612,7 +612,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 new_values.extend(matching_contributors.get(int(import_index)))
                 continue
 
-            index = i + max(import_values_contributor_indizes) if len(import_values_contributor_indizes) > 0 else i
+            index = i + 1 + max(import_values_contributor_indizes) if len(import_values_contributor_indizes) > 0 else i
             if index in project_contributor_indizes:
                 index_to_update.append(contributor_values_list)
                 continue
@@ -1373,6 +1373,8 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
 
         import_values = []
         for import_option_key, import_option_url in request_urls.items():
+            print(f'!!!!!!!!!!!!! {import_option_key}')
+
             _imports, process_method, process_method_kwargs = self.smp_import_map.get(import_option_key).values()
 
             import_values = process_method(import_option_url, import_values, headers, **process_method_kwargs)
