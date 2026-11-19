@@ -612,7 +612,7 @@ class SMPRepoImportMixin(ProjectImportMixin, RDMOXMLImport):
                 new_values.extend(matching_contributors.get(int(import_index)))
                 continue
 
-            index = i + max(import_values_contributor_indizes) if len(import_values_contributor_indizes) > 0 else i
+            index = i + 1 + max(import_values_contributor_indizes) if len(import_values_contributor_indizes) > 0 else i
             if index in project_contributor_indizes:
                 index_to_update.append(contributor_values_list)
                 continue
