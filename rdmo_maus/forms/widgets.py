@@ -86,7 +86,7 @@ class RadioSelectWithOther(forms.RadioSelect):
         radio_attrs = {**{k: v for k, v in option_attrs.items() if k != 'class'}, 'id': radio_id}
 
         if label == 'other':
-            text_attrs = {**option_attrs, 'id': text_id, 'oninput': 'selectRadioOption(this)'}
+            text_attrs = {**option_attrs, 'id': text_id, 'oninput': 'selectOtherOption(this)'}
             subwidgets = [
                 {
                     'name': f'{name}_radio',
@@ -106,6 +106,7 @@ class RadioSelectWithOther(forms.RadioSelect):
                 },
             ]
         else:
+            radio_attrs = {**radio_attrs, 'onchange': 'deselectOtherOption(this)'}
             subwidgets = [
                 {
                     'name': f'{name}_radio',
